@@ -1,0 +1,528 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="RecipiesDbModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="AspNetUsers">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="Email" Type="nvarchar" MaxLength="256" />
+          <Property Name="EmailConfirmed" Type="bit" Nullable="false" />
+          <Property Name="PasswordHash" Type="nvarchar(max)" />
+          <Property Name="SecurityStamp" Type="nvarchar(max)" />
+          <Property Name="PhoneNumber" Type="nvarchar(max)" />
+          <Property Name="PhoneNumberConfirmed" Type="bit" Nullable="false" />
+          <Property Name="TwoFactorEnabled" Type="bit" Nullable="false" />
+          <Property Name="LockoutEndDateUtc" Type="datetime" />
+          <Property Name="LockoutEnabled" Type="bit" Nullable="false" />
+          <Property Name="AccessFailedCount" Type="int" Nullable="false" />
+          <Property Name="UserName" Type="nvarchar" MaxLength="256" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Images">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ImageType" Type="tinyint" />
+          <Property Name="seq" Type="tinyint" />
+          <Property Name="ImageApplyID" Type="bigint" />
+          <Property Name="ImageLocation" Type="nvarchar" MaxLength="255" />
+        </EntityType>
+        <EntityType Name="Ingredients">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Description" Type="nvarchar" MaxLength="255" />
+        </EntityType>
+        <EntityType Name="RecipieDirections">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="RecipieID" Type="bigint" />
+          <Property Name="Step" Type="smallint" />
+          <Property Name="StepInstructions" Type="nvarchar" MaxLength="500" />
+          <Property Name="TimeSpanHours" Type="tinyint" />
+          <Property Name="TimeSpanMinutes" Type="tinyint" />
+        </EntityType>
+        <EntityType Name="RecipieIngredients">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="RecipieID" Type="bigint" Nullable="false" />
+          <Property Name="IngredientID" Type="bigint" Nullable="false" />
+          <Property Name="UnitsOfMeasurementID" Type="bigint" />
+          <Property Name="Quantity" Type="numeric" Precision="2" Scale="2" />
+        </EntityType>
+        <EntityType Name="Recipies">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Description" Type="nvarchar" MaxLength="255" />
+          <Property Name="TotalTimeNeededHours" Type="tinyint" />
+          <Property Name="TotalTimeNeededMinutes" Type="tinyint" />
+          <Property Name="CreatedByUser" Type="nvarchar" MaxLength="128" />
+          <Property Name="AverageRecipieRating" Type="numeric" Precision="1" Scale="0" />
+        </EntityType>
+        <EntityType Name="UnitsOfMeasurement">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Description" Type="nvarchar" MaxLength="100" />
+          <Property Name="Abbreviation" Type="nvarchar" MaxLength="10" />
+        </EntityType>
+        <EntityType Name="UserRecipieBookMarks">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UserID" Type="nvarchar" MaxLength="100" />
+          <Property Name="RecipieID" Type="bigint" />
+        </EntityType>
+        <EntityType Name="UserRecipieRatings">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UserID" Type="nvarchar" MaxLength="100" />
+          <Property Name="RecipieID" Type="bigint" />
+          <Property Name="RecipieRating" Type="numeric" Precision="1" Scale="0" />
+        </EntityType>
+        <Association Name="FK_RecipieDirections_Recipies">
+          <End Role="Recipies" Type="Self.Recipies" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="RecipieDirections" Type="Self.RecipieDirections" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Recipies">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="RecipieDirections">
+              <PropertyRef Name="RecipieID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RecipieIngredients_Ingredients">
+          <End Role="Ingredients" Type="Self.Ingredients" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="RecipieIngredients" Type="Self.RecipieIngredients" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Ingredients">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="RecipieIngredients">
+              <PropertyRef Name="IngredientID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RecipieIngredients_Recipies">
+          <End Role="Recipies" Type="Self.Recipies" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="RecipieIngredients" Type="Self.RecipieIngredients" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Recipies">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="RecipieIngredients">
+              <PropertyRef Name="RecipieID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UserRecipieBookMarks_Recipies">
+          <End Role="Recipies" Type="Self.Recipies" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="UserRecipieBookMarks" Type="Self.UserRecipieBookMarks" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Recipies">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="UserRecipieBookMarks">
+              <PropertyRef Name="RecipieID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UserRecipieRatings_Recipies">
+          <End Role="Recipies" Type="Self.Recipies" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="UserRecipieRatings" Type="Self.UserRecipieRatings" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Recipies">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="UserRecipieRatings">
+              <PropertyRef Name="RecipieID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="RecipiesDbModelStoreContainer">
+          <EntitySet Name="AspNetUsers" EntityType="Self.AspNetUsers" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Images" EntityType="Self.Images" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Ingredients" EntityType="Self.Ingredients" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="RecipieDirections" EntityType="Self.RecipieDirections" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="RecipieIngredients" EntityType="Self.RecipieIngredients" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Recipies" EntityType="Self.Recipies" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="UnitsOfMeasurement" EntityType="Self.UnitsOfMeasurement" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="UserRecipieBookMarks" EntityType="Self.UserRecipieBookMarks" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="UserRecipieRatings" EntityType="Self.UserRecipieRatings" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_RecipieDirections_Recipies" Association="Self.FK_RecipieDirections_Recipies">
+            <End Role="Recipies" EntitySet="Recipies" />
+            <End Role="RecipieDirections" EntitySet="RecipieDirections" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RecipieIngredients_Ingredients" Association="Self.FK_RecipieIngredients_Ingredients">
+            <End Role="Ingredients" EntitySet="Ingredients" />
+            <End Role="RecipieIngredients" EntitySet="RecipieIngredients" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RecipieIngredients_Recipies" Association="Self.FK_RecipieIngredients_Recipies">
+            <End Role="Recipies" EntitySet="Recipies" />
+            <End Role="RecipieIngredients" EntitySet="RecipieIngredients" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserRecipieBookMarks_Recipies" Association="Self.FK_UserRecipieBookMarks_Recipies">
+            <End Role="Recipies" EntitySet="Recipies" />
+            <End Role="UserRecipieBookMarks" EntitySet="UserRecipieBookMarks" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserRecipieRatings_Recipies" Association="Self.FK_UserRecipieRatings_Recipies">
+            <End Role="Recipies" EntitySet="Recipies" />
+            <End Role="UserRecipieRatings" EntitySet="UserRecipieRatings" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="RecipiesDbModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="Image">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ImageType" Type="Byte" />
+          <Property Name="seq" Type="Byte" />
+          <Property Name="ImageApplyID" Type="Int64" />
+          <Property Name="ImageLocation" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="Ingredient">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Description" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="RecipieIngredients" Relationship="Self.FK_RecipieIngredients_Ingredients" FromRole="Ingredients" ToRole="RecipieIngredients" />
+        </EntityType>
+        <EntityType Name="RecipieDirection">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Step" Type="Int16" />
+          <Property Name="StepInstructions" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+          <Property Name="TimeSpanHours" Type="Byte" />
+          <Property Name="TimeSpanMinutes" Type="Byte" />
+          <NavigationProperty Name="Recipy" Relationship="Self.FK_RecipieDirections_Recipies" FromRole="RecipieDirections" ToRole="Recipies" />
+        </EntityType>
+        <EntityType Name="RecipieIngredient">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UnitsOfMeasurementID" Type="Int64" />
+          <Property Name="Quantity" Type="Decimal" Precision="2" Scale="2" />
+          <NavigationProperty Name="Ingredient" Relationship="Self.FK_RecipieIngredients_Ingredients" FromRole="RecipieIngredients" ToRole="Ingredients" />
+          <NavigationProperty Name="Recipy" Relationship="Self.FK_RecipieIngredients_Recipies" FromRole="RecipieIngredients" ToRole="Recipies" />
+        </EntityType>
+        <EntityType Name="Recipy">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Description" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="TotalTimeNeededHours" Type="Byte" />
+          <Property Name="TotalTimeNeededMinutes" Type="Byte" />
+          <Property Name="CreatedByUser" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="AverageRecipieRating" Type="Decimal" Precision="1" Scale="0" />
+          <NavigationProperty Name="RecipieDirections" Relationship="Self.FK_RecipieDirections_Recipies" FromRole="Recipies" ToRole="RecipieDirections" />
+          <NavigationProperty Name="RecipieIngredients" Relationship="Self.FK_RecipieIngredients_Recipies" FromRole="Recipies" ToRole="RecipieIngredients" />
+          <NavigationProperty Name="UserRecipieBookMarks" Relationship="Self.FK_UserRecipieBookMarks_Recipies" FromRole="Recipies" ToRole="UserRecipieBookMarks" />
+          <NavigationProperty Name="UserRecipieRatings" Relationship="Self.FK_UserRecipieRatings_Recipies" FromRole="Recipies" ToRole="UserRecipieRatings" />
+        </EntityType>
+        <EntityType Name="UnitsOfMeasurement">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Description" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Abbreviation" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="UserRecipieBookMark">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UserID" Type="String" MaxLength="100" Unicode="true" FixedLength="false" />
+          <NavigationProperty Name="Recipy" Relationship="Self.FK_UserRecipieBookMarks_Recipies" FromRole="UserRecipieBookMarks" ToRole="Recipies" />
+        </EntityType>
+        <EntityType Name="UserRecipieRating">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UserID" Type="String" MaxLength="100" Unicode="true" FixedLength="false" />
+          <Property Name="RecipieRating" Type="Decimal" Precision="1" Scale="0" />
+          <NavigationProperty Name="Recipy" Relationship="Self.FK_UserRecipieRatings_Recipies" FromRole="UserRecipieRatings" ToRole="Recipies" />
+        </EntityType>
+        <Association Name="FK_RecipieIngredients_Ingredients">
+          <End Role="Ingredients" Type="Self.Ingredient" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="RecipieIngredients" Type="Self.RecipieIngredient" Multiplicity="*" />
+        </Association>
+        <Association Name="FK_RecipieDirections_Recipies">
+          <End Role="Recipies" Type="Self.Recipy" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="RecipieDirections" Type="Self.RecipieDirection" Multiplicity="*" />
+        </Association>
+        <Association Name="FK_RecipieIngredients_Recipies">
+          <End Role="Recipies" Type="Self.Recipy" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="RecipieIngredients" Type="Self.RecipieIngredient" Multiplicity="*" />
+        </Association>
+        <Association Name="FK_UserRecipieBookMarks_Recipies">
+          <End Role="Recipies" Type="Self.Recipy" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="UserRecipieBookMarks" Type="Self.UserRecipieBookMark" Multiplicity="*" />
+        </Association>
+        <Association Name="FK_UserRecipieRatings_Recipies">
+          <End Role="Recipies" Type="Self.Recipy" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="UserRecipieRatings" Type="Self.UserRecipieRating" Multiplicity="*" />
+        </Association>
+        <EntityContainer Name="RecipiesDbEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Images" EntityType="Self.Image" />
+          <EntitySet Name="Ingredients" EntityType="Self.Ingredient" />
+          <EntitySet Name="RecipieDirections" EntityType="Self.RecipieDirection" />
+          <EntitySet Name="RecipieIngredients" EntityType="Self.RecipieIngredient" />
+          <EntitySet Name="Recipies" EntityType="Self.Recipy" />
+          <EntitySet Name="UnitsOfMeasurements" EntityType="Self.UnitsOfMeasurement" />
+          <EntitySet Name="UserRecipieBookMarks" EntityType="Self.UserRecipieBookMark" />
+          <EntitySet Name="UserRecipieRatings" EntityType="Self.UserRecipieRating" />
+          <AssociationSet Name="FK_RecipieIngredients_Ingredients" Association="Self.FK_RecipieIngredients_Ingredients">
+            <End Role="Ingredients" EntitySet="Ingredients" />
+            <End Role="RecipieIngredients" EntitySet="RecipieIngredients" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RecipieDirections_Recipies" Association="Self.FK_RecipieDirections_Recipies">
+            <End Role="Recipies" EntitySet="Recipies" />
+            <End Role="RecipieDirections" EntitySet="RecipieDirections" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RecipieIngredients_Recipies" Association="Self.FK_RecipieIngredients_Recipies">
+            <End Role="Recipies" EntitySet="Recipies" />
+            <End Role="RecipieIngredients" EntitySet="RecipieIngredients" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserRecipieBookMarks_Recipies" Association="Self.FK_UserRecipieBookMarks_Recipies">
+            <End Role="Recipies" EntitySet="Recipies" />
+            <End Role="UserRecipieBookMarks" EntitySet="UserRecipieBookMarks" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserRecipieRatings_Recipies" Association="Self.FK_UserRecipieRatings_Recipies">
+            <End Role="Recipies" EntitySet="Recipies" />
+            <End Role="UserRecipieRatings" EntitySet="UserRecipieRatings" />
+          </AssociationSet>
+          <EntitySet Name="AspNetUsers" EntityType="RecipiesDbModel.AspNetUser" />
+        </EntityContainer>
+        <EntityType Name="AspNetUser">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="Email" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="EmailConfirmed" Type="Boolean" Nullable="false" />
+          <Property Name="PasswordHash" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="SecurityStamp" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="PhoneNumber" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="PhoneNumberConfirmed" Type="Boolean" Nullable="false" />
+          <Property Name="TwoFactorEnabled" Type="Boolean" Nullable="false" />
+          <Property Name="LockoutEndDateUtc" Type="DateTime" Precision="3" />
+          <Property Name="LockoutEnabled" Type="Boolean" Nullable="false" />
+          <Property Name="AccessFailedCount" Type="Int32" Nullable="false" />
+          <Property Name="UserName" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+        </EntityType>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="RecipiesDbModelStoreContainer" CdmEntityContainer="RecipiesDbEntities">
+          <EntitySetMapping Name="Images">
+            <EntityTypeMapping TypeName="RecipiesDbModel.Image">
+              <MappingFragment StoreEntitySet="Images">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="ImageType" ColumnName="ImageType" />
+                <ScalarProperty Name="seq" ColumnName="seq" />
+                <ScalarProperty Name="ImageApplyID" ColumnName="ImageApplyID" />
+                <ScalarProperty Name="ImageLocation" ColumnName="ImageLocation" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Ingredients">
+            <EntityTypeMapping TypeName="RecipiesDbModel.Ingredient">
+              <MappingFragment StoreEntitySet="Ingredients">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="RecipieDirections">
+            <EntityTypeMapping TypeName="RecipiesDbModel.RecipieDirection">
+              <MappingFragment StoreEntitySet="RecipieDirections">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="Step" ColumnName="Step" />
+                <ScalarProperty Name="StepInstructions" ColumnName="StepInstructions" />
+                <ScalarProperty Name="TimeSpanHours" ColumnName="TimeSpanHours" />
+                <ScalarProperty Name="TimeSpanMinutes" ColumnName="TimeSpanMinutes" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="RecipieIngredients">
+            <EntityTypeMapping TypeName="RecipiesDbModel.RecipieIngredient">
+              <MappingFragment StoreEntitySet="RecipieIngredients">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="UnitsOfMeasurementID" ColumnName="UnitsOfMeasurementID" />
+                <ScalarProperty Name="Quantity" ColumnName="Quantity" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Recipies">
+            <EntityTypeMapping TypeName="RecipiesDbModel.Recipy">
+              <MappingFragment StoreEntitySet="Recipies">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="TotalTimeNeededHours" ColumnName="TotalTimeNeededHours" />
+                <ScalarProperty Name="TotalTimeNeededMinutes" ColumnName="TotalTimeNeededMinutes" />
+                <ScalarProperty Name="CreatedByUser" ColumnName="CreatedByUser" />
+                <ScalarProperty Name="AverageRecipieRating" ColumnName="AverageRecipieRating" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="UnitsOfMeasurements">
+            <EntityTypeMapping TypeName="RecipiesDbModel.UnitsOfMeasurement">
+              <MappingFragment StoreEntitySet="UnitsOfMeasurement">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Abbreviation" ColumnName="Abbreviation" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="UserRecipieBookMarks">
+            <EntityTypeMapping TypeName="RecipiesDbModel.UserRecipieBookMark">
+              <MappingFragment StoreEntitySet="UserRecipieBookMarks">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="UserID" ColumnName="UserID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="UserRecipieRatings">
+            <EntityTypeMapping TypeName="RecipiesDbModel.UserRecipieRating">
+              <MappingFragment StoreEntitySet="UserRecipieRatings">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="UserID" ColumnName="UserID" />
+                <ScalarProperty Name="RecipieRating" ColumnName="RecipieRating" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <AssociationSetMapping Name="FK_RecipieIngredients_Ingredients" TypeName="RecipiesDbModel.FK_RecipieIngredients_Ingredients" StoreEntitySet="RecipieIngredients">
+            <EndProperty Name="Ingredients">
+              <ScalarProperty Name="ID" ColumnName="IngredientID" />
+            </EndProperty>
+            <EndProperty Name="RecipieIngredients">
+              <ScalarProperty Name="ID" ColumnName="ID" />
+            </EndProperty>
+          </AssociationSetMapping>
+          <AssociationSetMapping Name="FK_RecipieDirections_Recipies" TypeName="RecipiesDbModel.FK_RecipieDirections_Recipies" StoreEntitySet="RecipieDirections">
+            <EndProperty Name="Recipies">
+              <ScalarProperty Name="ID" ColumnName="RecipieID" />
+            </EndProperty>
+            <EndProperty Name="RecipieDirections">
+              <ScalarProperty Name="ID" ColumnName="ID" />
+            </EndProperty>
+            <Condition IsNull="false" ColumnName="RecipieID" />
+          </AssociationSetMapping>
+          <AssociationSetMapping Name="FK_RecipieIngredients_Recipies" TypeName="RecipiesDbModel.FK_RecipieIngredients_Recipies" StoreEntitySet="RecipieIngredients">
+            <EndProperty Name="Recipies">
+              <ScalarProperty Name="ID" ColumnName="RecipieID" />
+            </EndProperty>
+            <EndProperty Name="RecipieIngredients">
+              <ScalarProperty Name="ID" ColumnName="ID" />
+            </EndProperty>
+          </AssociationSetMapping>
+          <AssociationSetMapping Name="FK_UserRecipieBookMarks_Recipies" TypeName="RecipiesDbModel.FK_UserRecipieBookMarks_Recipies" StoreEntitySet="UserRecipieBookMarks">
+            <EndProperty Name="Recipies">
+              <ScalarProperty Name="ID" ColumnName="RecipieID" />
+            </EndProperty>
+            <EndProperty Name="UserRecipieBookMarks">
+              <ScalarProperty Name="ID" ColumnName="ID" />
+            </EndProperty>
+            <Condition IsNull="false" ColumnName="RecipieID" />
+          </AssociationSetMapping>
+          <AssociationSetMapping Name="FK_UserRecipieRatings_Recipies" TypeName="RecipiesDbModel.FK_UserRecipieRatings_Recipies" StoreEntitySet="UserRecipieRatings">
+            <EndProperty Name="Recipies">
+              <ScalarProperty Name="ID" ColumnName="RecipieID" />
+            </EndProperty>
+            <EndProperty Name="UserRecipieRatings">
+              <ScalarProperty Name="ID" ColumnName="ID" />
+            </EndProperty>
+            <Condition IsNull="false" ColumnName="RecipieID" />
+          </AssociationSetMapping>
+          <EntitySetMapping Name="AspNetUsers">
+            <EntityTypeMapping TypeName="RecipiesDbModel.AspNetUser">
+              <MappingFragment StoreEntitySet="AspNetUsers">
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+                <ScalarProperty Name="AccessFailedCount" ColumnName="AccessFailedCount" />
+                <ScalarProperty Name="LockoutEnabled" ColumnName="LockoutEnabled" />
+                <ScalarProperty Name="LockoutEndDateUtc" ColumnName="LockoutEndDateUtc" />
+                <ScalarProperty Name="TwoFactorEnabled" ColumnName="TwoFactorEnabled" />
+                <ScalarProperty Name="PhoneNumberConfirmed" ColumnName="PhoneNumberConfirmed" />
+                <ScalarProperty Name="PhoneNumber" ColumnName="PhoneNumber" />
+                <ScalarProperty Name="SecurityStamp" ColumnName="SecurityStamp" />
+                <ScalarProperty Name="PasswordHash" ColumnName="PasswordHash" />
+                <ScalarProperty Name="EmailConfirmed" ColumnName="EmailConfirmed" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="false" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

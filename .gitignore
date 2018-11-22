@@ -3,3 +3,10 @@
 ################################################################################
 
 /.vs
+/packages
+/Recipies.API/bin
+/Recipies.API/obj/Debug
+/Recipies.Objects/bin/Debug
+/Recipies.Objects/obj/Debug
+/Tester/bin/Debug
+/Tester/obj/Debug
