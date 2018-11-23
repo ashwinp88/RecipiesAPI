@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="774d72938b044371b000600f4a8d7467" Name="Diagram1">
+        <EntityTypeShape EntityType="RecipesDbModel.Image" Width="1.5" PointX="5.75" PointY="2.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="RecipesDbModel.Ingredient" Width="1.5" PointX="3.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="RecipesDbModel.RecipeDirection" Width="1.5" PointX="3" PointY="4" IsExpanded="true" />
+        <EntityTypeShape EntityType="RecipesDbModel.RecipeIngredient" Width="1.5" PointX="6" PointY="6.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="RecipesDbModel.Recipe" Width="1.5" PointX="0.75" PointY="6" IsExpanded="true" />
+        <EntityTypeShape EntityType="RecipesDbModel.UnitsOfMeasurement" Width="1.5" PointX="2.75" PointY="7.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="RecipesDbModel.UserRecipeBookMark" Width="1.5" PointX="3" PointY="9.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="RecipesDbModel.UserRecipeRating" Width="1.5" PointX="3" PointY="12" IsExpanded="true" />
+        <AssociationConnector Association="RecipesDbModel.FK_RecipieIngredients_Ingredients" ManuallyRouted="false" />
+        <AssociationConnector Association="RecipesDbModel.FK_RecipieDirections_Recipies" ManuallyRouted="false" />
+        <AssociationConnector Association="RecipesDbModel.FK_RecipieIngredients_Recipies" ManuallyRouted="false" />
+        <AssociationConnector Association="RecipesDbModel.FK_UserRecipieBookMarks_Recipies" ManuallyRouted="false" />
+        <AssociationConnector Association="RecipesDbModel.FK_UserRecipieRatings_Recipies" ManuallyRouted="false" />
+        <EntityTypeShape EntityType="RecipesDbModel.AspNetUser" Width="1.5" PointX="8.375" PointY="0.75" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

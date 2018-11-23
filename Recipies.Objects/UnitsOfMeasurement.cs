@@ -11,15 +11,11 @@ namespace Recipies.Objects
 {
     using System;
     using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations;
-
+    
     public partial class UnitsOfMeasurement
     {
         public long ID { get; set; }
-
-        [Required]
         public string Description { get; set; }
-        [Required]
         public string Abbreviation { get; set; }
     }
 }

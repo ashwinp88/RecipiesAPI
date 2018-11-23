@@ -17,6 +17,7 @@ namespace Recipies.API.Controllers
 {
     [EnableCors("*", "*", "*")]
     [RoutePrefix("UnitsOfMeasure")]
+    [ClientCacheControlFilter]
     public class UnitsOfMeasureController : ApiController
     {
         private sealed class Response
@@ -29,9 +30,17 @@ namespace Recipies.API.Controllers
 
         #region HTTP Actions
         // GET
-        public IHttpActionResult Get(int pageSize = 10, int pageNumber = 0)
+        public IHttpActionResult Get(int pageSize = 0, int pageNumber = 0)
         {
-            var pagedResults = db.UnitsOfMeasurements.OrderBy(r => r.Abbreviation).Skip((pageNumber) * pageSize).Take(pageSize);
+            IQueryable<UnitsOfMeasurement> pagedResults;
+            if (pageSize == 0)
+            {
+                pagedResults = db.UnitsOfMeasurements.OrderBy(r => r.Abbreviation);
+            }
+            else
+            {
+                pagedResults = db.UnitsOfMeasurements.OrderBy(r => r.Abbreviation).Skip((pageNumber) * pageSize).Take(pageSize);
+            }            
             var res = new Response { UnitsOfMeasurements = pagedResults, Length = db.UnitsOfMeasurements.Count() };
             return Ok(res);
         }

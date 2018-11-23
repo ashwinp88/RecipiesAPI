@@ -8,5 +8,10 @@ namespace Recipies.Objects
 {
     public static class Shared
     {
+        public enum ImageType
+        {
+            Recipe = 0,
+            RecipeStep = 1
+        }
     }
 }

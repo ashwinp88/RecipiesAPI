@@ -12,13 +12,12 @@ namespace Recipies.Objects
     using System;
     using System.Collections.Generic;
     
-    public partial class RecipieIngredient
+    public partial class UserRecipeRating
     {
         public long ID { get; set; }
-        public Nullable<long> UnitsOfMeasurementID { get; set; }
-        public Nullable<decimal> Quantity { get; set; }
+        public string UserID { get; set; }
+        public Nullable<decimal> RecipieRating { get; set; }
     
-        public virtual Ingredient Ingredient { get; set; }
-        public virtual Recipy Recipy { get; set; }
+        public virtual Recipe Recipe { get; set; }
     }
 }

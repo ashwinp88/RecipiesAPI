@@ -28,9 +28,17 @@ namespace Recipies.API.Controllers
 
         #region HTTP Actions
         //GET
-        public IHttpActionResult Get(int pageSize = 10, int pageNumber = 0)
+        public IHttpActionResult Get(int pageSize = 0, int pageNumber = 0)
         {
-            var pagedIngredients = db.Ingredients.OrderBy(r => r.Description).Skip((pageNumber) * pageSize).Take(pageSize);
+            IQueryable<Ingredient> pagedIngredients;
+            if (pageSize == 0)
+            {
+                pagedIngredients = db.Ingredients.OrderBy(r => r.Description);
+            }
+            else
+            {
+                pagedIngredients = db.Ingredients.OrderBy(r => r.Description).Skip((pageNumber) * pageSize).Take(pageSize);
+            }            
             var res = new Response { Ingredients = pagedIngredients, Length = db.Ingredients.Count() };
             //var msg = Request.CreateResponse(HttpStatusCode.OK, res);
             //return msg;

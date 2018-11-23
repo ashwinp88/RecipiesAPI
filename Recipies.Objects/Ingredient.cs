@@ -11,22 +11,19 @@ namespace Recipies.Objects
 {
     using System;
     using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations;
-
+    
     public partial class Ingredient
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Ingredient()
         {
-            this.RecipieIngredients = new HashSet<RecipieIngredient>();
+            this.RecipeIngredients = new HashSet<RecipeIngredient>();
         }
     
         public long ID { get; set; }
-
-        [Required]
         public string Description { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<RecipieIngredient> RecipieIngredients { get; set; }
+        public virtual ICollection<RecipeIngredient> RecipeIngredients { get; set; }
     }
 }

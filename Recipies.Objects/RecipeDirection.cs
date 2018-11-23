@@ -12,11 +12,14 @@ namespace Recipies.Objects
     using System;
     using System.Collections.Generic;
     
-    public partial class UserRecipieBookMark
+    public partial class RecipeDirection
     {
         public long ID { get; set; }
-        public string UserID { get; set; }
+        public Nullable<short> Step { get; set; }
+        public string StepInstructions { get; set; }
+        public Nullable<byte> TimeSpanHours { get; set; }
+        public Nullable<byte> TimeSpanMinutes { get; set; }
     
-        public virtual Recipy Recipy { get; set; }
+        public virtual Recipe Recipe { get; set; }
     }
 }

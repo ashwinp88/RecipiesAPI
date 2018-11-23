@@ -51,75 +51,75 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AspNetUser.cs">
-      <DependentUpon>RecipiesModel.tt</DependentUpon>
+      <DependentUpon>RecipeModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Encrypt.cs" />
     <Compile Include="Image.cs">
-      <DependentUpon>RecipiesModel.tt</DependentUpon>
+      <DependentUpon>RecipeModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Ingredient.cs">
-      <DependentUpon>RecipiesModel.tt</DependentUpon>
+      <DependentUpon>RecipeModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RecipieDirection.cs">
-      <DependentUpon>RecipiesModel.tt</DependentUpon>
+    <Compile Include="Recipe.cs">
+      <DependentUpon>RecipeModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="RecipieIngredient.cs">
-      <DependentUpon>RecipiesModel.tt</DependentUpon>
+    <Compile Include="RecipeDirection.cs">
+      <DependentUpon>RecipeModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="RecipiesModel.Context.cs">
+    <Compile Include="RecipeIngredient.cs">
+      <DependentUpon>RecipeModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RecipeModel.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>RecipiesModel.Context.tt</DependentUpon>
+      <DependentUpon>RecipeModel.Context.tt</DependentUpon>
     </Compile>
-    <Compile Include="RecipiesModel.cs">
+    <Compile Include="RecipeModel.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>RecipiesModel.tt</DependentUpon>
+      <DependentUpon>RecipeModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="RecipiesModel.Designer.cs">
+    <Compile Include="RecipeModel.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>RecipiesModel.edmx</DependentUpon>
-    </Compile>
-    <Compile Include="Recipy.cs">
-      <DependentUpon>RecipiesModel.tt</DependentUpon>
+      <DependentUpon>RecipeModel.edmx</DependentUpon>
     </Compile>
     <Compile Include="Shared.cs" />
     <Compile Include="UnitsOfMeasurement.cs">
-      <DependentUpon>RecipiesModel.tt</DependentUpon>
+      <DependentUpon>RecipeModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="UserRecipieBookMark.cs">
-      <DependentUpon>RecipiesModel.tt</DependentUpon>
+    <Compile Include="UserRecipeBookMark.cs">
+      <DependentUpon>RecipeModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="UserRecipieRating.cs">
-      <DependentUpon>RecipiesModel.tt</DependentUpon>
+    <Compile Include="UserRecipeRating.cs">
+      <DependentUpon>RecipeModel.tt</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
-    <EntityDeploy Include="RecipiesModel.edmx">
+    <EntityDeploy Include="RecipeModel.edmx">
       <Generator>EntityModelCodeGenerator</Generator>
-      <LastGenOutput>RecipiesModel.Designer.cs</LastGenOutput>
+      <LastGenOutput>RecipeModel.Designer.cs</LastGenOutput>
     </EntityDeploy>
-    <None Include="RecipiesModel.edmx.diagram">
-      <DependentUpon>RecipiesModel.edmx</DependentUpon>
+    <None Include="RecipeModel.edmx.diagram">
+      <DependentUpon>RecipeModel.edmx</DependentUpon>
     </None>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="RecipiesModel.Context.tt">
+    <Content Include="RecipeModel.Context.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>RecipiesModel.edmx</DependentUpon>
-      <LastGenOutput>RecipiesModel.Context.cs</LastGenOutput>
+      <DependentUpon>RecipeModel.edmx</DependentUpon>
+      <LastGenOutput>RecipeModel.Context.cs</LastGenOutput>
     </Content>
-    <Content Include="RecipiesModel.tt">
+    <Content Include="RecipeModel.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>RecipiesModel.edmx</DependentUpon>
-      <LastGenOutput>RecipiesModel.cs</LastGenOutput>
+      <DependentUpon>RecipeModel.edmx</DependentUpon>
+      <LastGenOutput>RecipeModel.cs</LastGenOutput>
     </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
