@@ -8,7 +8,7 @@ using System.Web.Http;
 
 namespace Recipies.API.Controllers
 {
-    [Authorize, RoutePrefix("User")]
+    [Authorize, RoutePrefix("api/User")]
     public class UserController : ApiController
     {
         private RecipiesDbEntities db = new RecipiesDbEntities();

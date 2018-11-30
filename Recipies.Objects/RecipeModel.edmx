@@ -46,7 +46,8 @@
           <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="RecipieID" Type="bigint" />
           <Property Name="Step" Type="smallint" />
-          <Property Name="StepInstructions" Type="nvarchar" MaxLength="500" />
+          <Property Name="StepTitle" Type="nvarchar" MaxLength="100" />
+          <Property Name="StepInstructions" Type="nvarchar(max)" />
           <Property Name="TimeSpanHours" Type="tinyint" />
           <Property Name="TimeSpanMinutes" Type="tinyint" />
         </EntityType>
@@ -58,7 +59,7 @@
           <Property Name="RecipieID" Type="bigint" Nullable="false" />
           <Property Name="IngredientID" Type="bigint" Nullable="false" />
           <Property Name="UnitsOfMeasurementID" Type="bigint" />
-          <Property Name="Quantity" Type="numeric" Precision="2" Scale="2" />
+          <Property Name="Quantity" Type="float" />
         </EntityType>
         <EntityType Name="Recipes">
           <Key>
@@ -98,6 +99,18 @@
           <Property Name="RecipieID" Type="bigint" />
           <Property Name="RecipieRating" Type="numeric" Precision="1" Scale="0" />
         </EntityType>
+        <Association Name="FK_RecipeIngredients_UnitsOfMeasurement">
+          <End Role="UnitsOfMeasurement" Type="Self.UnitsOfMeasurement" Multiplicity="0..1" />
+          <End Role="RecipeIngredients" Type="Self.RecipeIngredients" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="UnitsOfMeasurement">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="RecipeIngredients">
+              <PropertyRef Name="UnitsOfMeasurementID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_RecipieDirections_Recipies">
           <End Role="Recipes" Type="Self.Recipes" Multiplicity="0..1">
             <OnDelete Action="Cascade" />
@@ -113,9 +126,7 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_RecipieIngredients_Ingredients">
-          <End Role="Ingredients" Type="Self.Ingredients" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
+          <End Role="Ingredients" Type="Self.Ingredients" Multiplicity="1" />
           <End Role="RecipeIngredients" Type="Self.RecipeIngredients" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Ingredients">
@@ -178,6 +189,10 @@
           <EntitySet Name="UnitsOfMeasurement" EntityType="Self.UnitsOfMeasurement" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="UserRecipeBookMarks" EntityType="Self.UserRecipeBookMarks" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="UserRecipeRatings" EntityType="Self.UserRecipeRatings" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_RecipeIngredients_UnitsOfMeasurement" Association="Self.FK_RecipeIngredients_UnitsOfMeasurement">
+            <End Role="UnitsOfMeasurement" EntitySet="UnitsOfMeasurement" />
+            <End Role="RecipeIngredients" EntitySet="RecipeIngredients" />
+          </AssociationSet>
           <AssociationSet Name="FK_RecipieDirections_Recipies" Association="Self.FK_RecipieDirections_Recipies">
             <End Role="Recipes" EntitySet="Recipes" />
             <End Role="RecipeDirections" EntitySet="RecipeDirections" />
@@ -213,35 +228,6 @@
           <Property Name="ImageApplyID" Type="Int64" />
           <Property Name="ImageLocation" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
         </EntityType>
-        <EntityType Name="Ingredient">
-          <Key>
-            <PropertyRef Name="ID" />
-          </Key>
-          <Property Name="ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Description" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="RecipeIngredients" Relationship="Self.FK_RecipieIngredients_Ingredients" FromRole="Ingredients" ToRole="RecipeIngredients" />
-        </EntityType>
-        <EntityType Name="RecipeDirection">
-          <Key>
-            <PropertyRef Name="ID" />
-          </Key>
-          <Property Name="ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Step" Type="Int16" />
-          <Property Name="StepInstructions" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
-          <Property Name="TimeSpanHours" Type="Byte" />
-          <Property Name="TimeSpanMinutes" Type="Byte" />
-          <NavigationProperty Name="Recipe" Relationship="Self.FK_RecipieDirections_Recipies" FromRole="RecipeDirections" ToRole="Recipes" />
-        </EntityType>
-        <EntityType Name="RecipeIngredient">
-          <Key>
-            <PropertyRef Name="ID" />
-          </Key>
-          <Property Name="ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="UnitsOfMeasurementID" Type="Int64" />
-          <Property Name="Quantity" Type="Decimal" Precision="2" Scale="2" />
-          <NavigationProperty Name="Ingredient" Relationship="Self.FK_RecipieIngredients_Ingredients" FromRole="RecipeIngredients" ToRole="Ingredients" />
-          <NavigationProperty Name="Recipe" Relationship="Self.FK_RecipieIngredients_Recipies" FromRole="RecipeIngredients" ToRole="Recipes" />
-        </EntityType>
         <EntityType Name="Recipe">
           <Key>
             <PropertyRef Name="ID" />
@@ -253,11 +239,11 @@
           <Property Name="TotalTimeNeededMinutes" Type="Byte" />
           <Property Name="CreatedByUser" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
           <Property Name="AverageRecipieRating" Type="Decimal" Precision="1" Scale="0" />
-          <NavigationProperty Name="RecipeDirections" Relationship="Self.FK_RecipieDirections_Recipies" FromRole="Recipes" ToRole="RecipeDirections" />
-          <NavigationProperty Name="RecipeIngredients" Relationship="Self.FK_RecipieIngredients_Recipies" FromRole="Recipes" ToRole="RecipeIngredients" />
           <NavigationProperty Name="UserRecipeBookMarks" Relationship="Self.FK_UserRecipieBookMarks_Recipies" FromRole="Recipes" ToRole="UserRecipeBookMarks" />
           <NavigationProperty Name="UserRecipeRatings" Relationship="Self.FK_UserRecipieRatings_Recipies" FromRole="Recipes" ToRole="UserRecipeRatings" />
           <Property Name="Complete" Type="Boolean" />
+          <NavigationProperty Name="RecipeDirections" Relationship="RecipesDbModel.FK_RecipieDirections_Recipies" FromRole="Recipe" ToRole="RecipeDirection" />
+          <NavigationProperty Name="RecipeIngredients" Relationship="RecipesDbModel.FK_RecipieIngredients_Recipies" FromRole="Recipe" ToRole="RecipeIngredient" />
         </EntityType>
         <EntityType Name="UnitsOfMeasurement">
           <Key>
@@ -266,6 +252,7 @@
           <Property Name="ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Description" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="Abbreviation" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="RecipeIngredients" Relationship="RecipesDbModel.FK_RecipeIngredients_UnitsOfMeasurement" FromRole="UnitsOfMeasurement" ToRole="RecipeIngredient" />
         </EntityType>
         <EntityType Name="UserRecipeBookMark">
           <Key>
@@ -284,24 +271,6 @@
           <Property Name="RecipieRating" Type="Decimal" Precision="1" Scale="0" />
           <NavigationProperty Name="Recipe" Relationship="Self.FK_UserRecipieRatings_Recipies" FromRole="UserRecipeRatings" ToRole="Recipes" />
         </EntityType>
-        <Association Name="FK_RecipieIngredients_Ingredients">
-          <End Role="Ingredients" Type="Self.Ingredient" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Role="RecipeIngredients" Type="Self.RecipeIngredient" Multiplicity="*" />
-        </Association>
-        <Association Name="FK_RecipieDirections_Recipies">
-          <End Role="Recipes" Type="Self.Recipe" Multiplicity="0..1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Role="RecipeDirections" Type="Self.RecipeDirection" Multiplicity="*" />
-        </Association>
-        <Association Name="FK_RecipieIngredients_Recipies">
-          <End Role="Recipes" Type="Self.Recipe" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Role="RecipeIngredients" Type="Self.RecipeIngredient" Multiplicity="*" />
-        </Association>
         <Association Name="FK_UserRecipieBookMarks_Recipies">
           <End Role="Recipes" Type="Self.Recipe" Multiplicity="0..1">
             <OnDelete Action="Cascade" />
@@ -316,25 +285,10 @@
         </Association>
         <EntityContainer Name="RecipiesDbEntities" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="Images" EntityType="Self.Image" />
-          <EntitySet Name="Ingredients" EntityType="Self.Ingredient" />
-          <EntitySet Name="RecipeDirections" EntityType="Self.RecipeDirection" />
-          <EntitySet Name="RecipeIngredients" EntityType="Self.RecipeIngredient" />
           <EntitySet Name="Recipes" EntityType="Self.Recipe" />
           <EntitySet Name="UnitsOfMeasurements" EntityType="Self.UnitsOfMeasurement" />
           <EntitySet Name="UserRecipeBookMarks" EntityType="Self.UserRecipeBookMark" />
           <EntitySet Name="UserRecipeRatings" EntityType="Self.UserRecipeRating" />
-          <AssociationSet Name="FK_RecipieIngredients_Ingredients" Association="Self.FK_RecipieIngredients_Ingredients">
-            <End Role="Ingredients" EntitySet="Ingredients" />
-            <End Role="RecipeIngredients" EntitySet="RecipeIngredients" />
-          </AssociationSet>
-          <AssociationSet Name="FK_RecipieDirections_Recipies" Association="Self.FK_RecipieDirections_Recipies">
-            <End Role="Recipes" EntitySet="Recipes" />
-            <End Role="RecipeDirections" EntitySet="RecipeDirections" />
-          </AssociationSet>
-          <AssociationSet Name="FK_RecipieIngredients_Recipies" Association="Self.FK_RecipieIngredients_Recipies">
-            <End Role="Recipes" EntitySet="Recipes" />
-            <End Role="RecipeIngredients" EntitySet="RecipeIngredients" />
-          </AssociationSet>
           <AssociationSet Name="FK_UserRecipieBookMarks_Recipies" Association="Self.FK_UserRecipieBookMarks_Recipies">
             <End Role="Recipes" EntitySet="Recipes" />
             <End Role="UserRecipeBookMarks" EntitySet="UserRecipeBookMarks" />
@@ -344,7 +298,26 @@
             <End Role="UserRecipeRatings" EntitySet="UserRecipeRatings" />
           </AssociationSet>
           <EntitySet Name="AspNetUsers" EntityType="RecipesDbModel.AspNetUser" />
-        </EntityContainer>
+          <EntitySet Name="RecipeDirections" EntityType="RecipesDbModel.RecipeDirection" />
+          <AssociationSet Name="FK_RecipieDirections_Recipies" Association="RecipesDbModel.FK_RecipieDirections_Recipies">
+            <End Role="Recipe" EntitySet="Recipes" />
+            <End Role="RecipeDirection" EntitySet="RecipeDirections" />
+          </AssociationSet>
+          <EntitySet Name="Ingredients" EntityType="RecipesDbModel.Ingredient" />
+          <EntitySet Name="RecipeIngredients" EntityType="RecipesDbModel.RecipeIngredient" />
+          <AssociationSet Name="FK_RecipieIngredients_Ingredients" Association="RecipesDbModel.FK_RecipieIngredients_Ingredients">
+            <End Role="Ingredient" EntitySet="Ingredients" />
+            <End Role="RecipeIngredient" EntitySet="RecipeIngredients" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RecipeIngredients_UnitsOfMeasurement" Association="RecipesDbModel.FK_RecipeIngredients_UnitsOfMeasurement">
+            <End Role="UnitsOfMeasurement" EntitySet="UnitsOfMeasurements" />
+            <End Role="RecipeIngredient" EntitySet="RecipeIngredients" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RecipieIngredients_Recipies" Association="RecipesDbModel.FK_RecipieIngredients_Recipies">
+            <End Role="Recipe" EntitySet="Recipes" />
+            <End Role="RecipeIngredient" EntitySet="RecipeIngredients" />
+          </AssociationSet>
+          </EntityContainer>
         <EntityType Name="AspNetUser">
           <Key>
             <PropertyRef Name="Id" />
@@ -362,7 +335,57 @@
           <Property Name="AccessFailedCount" Type="Int32" Nullable="false" />
           <Property Name="UserName" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
         </EntityType>
-      </Schema>
+        <EntityType Name="RecipeDirection">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Step" Type="Int16" />
+          <Property Name="StepTitle" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="StepInstructions" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="TimeSpanHours" Type="Byte" />
+          <Property Name="TimeSpanMinutes" Type="Byte" />
+          <NavigationProperty Name="Recipe" Relationship="RecipesDbModel.FK_RecipieDirections_Recipies" FromRole="RecipeDirection" ToRole="Recipe" />
+        </EntityType>
+        <Association Name="FK_RecipieDirections_Recipies">
+          <End Type="RecipesDbModel.Recipe" Role="Recipe" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="RecipesDbModel.RecipeDirection" Role="RecipeDirection" Multiplicity="*" />
+        </Association>
+        <EntityType Name="Ingredient">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Description" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="RecipeIngredients" Relationship="RecipesDbModel.FK_RecipieIngredients_Ingredients" FromRole="Ingredient" ToRole="RecipeIngredient" />
+        </EntityType>
+        <EntityType Name="RecipeIngredient">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Quantity" Type="Double" />
+          <NavigationProperty Name="Ingredient" Relationship="RecipesDbModel.FK_RecipieIngredients_Ingredients" FromRole="RecipeIngredient" ToRole="Ingredient" />
+          <NavigationProperty Name="UnitsOfMeasurement" Relationship="RecipesDbModel.FK_RecipeIngredients_UnitsOfMeasurement" FromRole="RecipeIngredient" ToRole="UnitsOfMeasurement" />
+          <NavigationProperty Name="Recipe" Relationship="RecipesDbModel.FK_RecipieIngredients_Recipies" FromRole="RecipeIngredient" ToRole="Recipe" />
+        </EntityType>
+        <Association Name="FK_RecipieIngredients_Ingredients">
+          <End Type="RecipesDbModel.Ingredient" Role="Ingredient" Multiplicity="1" />
+          <End Type="RecipesDbModel.RecipeIngredient" Role="RecipeIngredient" Multiplicity="*" />
+        </Association>
+        <Association Name="FK_RecipeIngredients_UnitsOfMeasurement">
+          <End Type="RecipesDbModel.UnitsOfMeasurement" Role="UnitsOfMeasurement" Multiplicity="0..1" />
+          <End Type="RecipesDbModel.RecipeIngredient" Role="RecipeIngredient" Multiplicity="*" />
+        </Association>
+        <Association Name="FK_RecipieIngredients_Recipies">
+          <End Type="RecipesDbModel.Recipe" Role="Recipe" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="RecipesDbModel.RecipeIngredient" Role="RecipeIngredient" Multiplicity="*" />
+        </Association>
+        </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
@@ -376,34 +399,6 @@
                 <ScalarProperty Name="seq" ColumnName="seq" />
                 <ScalarProperty Name="ImageApplyID" ColumnName="ImageApplyID" />
                 <ScalarProperty Name="ImageLocation" ColumnName="ImageLocation" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Ingredients">
-            <EntityTypeMapping TypeName="RecipesDbModel.Ingredient">
-              <MappingFragment StoreEntitySet="Ingredients">
-                <ScalarProperty Name="ID" ColumnName="ID" />
-                <ScalarProperty Name="Description" ColumnName="Description" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="RecipeDirections">
-            <EntityTypeMapping TypeName="RecipesDbModel.RecipeDirection">
-              <MappingFragment StoreEntitySet="RecipeDirections">
-                <ScalarProperty Name="ID" ColumnName="ID" />
-                <ScalarProperty Name="Step" ColumnName="Step" />
-                <ScalarProperty Name="StepInstructions" ColumnName="StepInstructions" />
-                <ScalarProperty Name="TimeSpanHours" ColumnName="TimeSpanHours" />
-                <ScalarProperty Name="TimeSpanMinutes" ColumnName="TimeSpanMinutes" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="RecipeIngredients">
-            <EntityTypeMapping TypeName="RecipesDbModel.RecipeIngredient">
-              <MappingFragment StoreEntitySet="RecipeIngredients">
-                <ScalarProperty Name="ID" ColumnName="ID" />
-                <ScalarProperty Name="UnitsOfMeasurementID" ColumnName="UnitsOfMeasurementID" />
-                <ScalarProperty Name="Quantity" ColumnName="Quantity" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -447,31 +442,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <AssociationSetMapping Name="FK_RecipieIngredients_Ingredients" TypeName="RecipesDbModel.FK_RecipieIngredients_Ingredients" StoreEntitySet="RecipeIngredients">
-            <EndProperty Name="Ingredients">
-              <ScalarProperty Name="ID" ColumnName="IngredientID" />
-            </EndProperty>
-            <EndProperty Name="RecipeIngredients">
-              <ScalarProperty Name="ID" ColumnName="ID" />
-            </EndProperty>
-          </AssociationSetMapping>
-          <AssociationSetMapping Name="FK_RecipieDirections_Recipies" TypeName="RecipesDbModel.FK_RecipieDirections_Recipies" StoreEntitySet="RecipeDirections">
-            <EndProperty Name="Recipes">
-              <ScalarProperty Name="ID" ColumnName="RecipieID" />
-            </EndProperty>
-            <EndProperty Name="RecipeDirections">
-              <ScalarProperty Name="ID" ColumnName="ID" />
-            </EndProperty>
-            <Condition IsNull="false" ColumnName="RecipieID" />
-          </AssociationSetMapping>
-          <AssociationSetMapping Name="FK_RecipieIngredients_Recipies" TypeName="RecipesDbModel.FK_RecipieIngredients_Recipies" StoreEntitySet="RecipeIngredients">
-            <EndProperty Name="Recipes">
-              <ScalarProperty Name="ID" ColumnName="RecipieID" />
-            </EndProperty>
-            <EndProperty Name="RecipeIngredients">
-              <ScalarProperty Name="ID" ColumnName="ID" />
-            </EndProperty>
-          </AssociationSetMapping>
           <AssociationSetMapping Name="FK_UserRecipieBookMarks_Recipies" TypeName="RecipesDbModel.FK_UserRecipieBookMarks_Recipies" StoreEntitySet="UserRecipeBookMarks">
             <EndProperty Name="Recipes">
               <ScalarProperty Name="ID" ColumnName="RecipieID" />
@@ -508,7 +478,69 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-        </EntityContainerMapping>
+          <EntitySetMapping Name="RecipeDirections">
+            <EntityTypeMapping TypeName="RecipesDbModel.RecipeDirection">
+              <MappingFragment StoreEntitySet="RecipeDirections">
+                <ScalarProperty Name="TimeSpanMinutes" ColumnName="TimeSpanMinutes" />
+                <ScalarProperty Name="TimeSpanHours" ColumnName="TimeSpanHours" />
+                <ScalarProperty Name="StepInstructions" ColumnName="StepInstructions" />
+                <ScalarProperty Name="StepTitle" ColumnName="StepTitle" />
+                <ScalarProperty Name="Step" ColumnName="Step" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <AssociationSetMapping Name="FK_RecipieDirections_Recipies" TypeName="RecipesDbModel.FK_RecipieDirections_Recipies" StoreEntitySet="RecipeDirections">
+            <EndProperty Name="RecipeDirection">
+              <ScalarProperty Name="ID" ColumnName="ID" />
+            </EndProperty>
+            <EndProperty Name="Recipe">
+              <ScalarProperty Name="ID" ColumnName="RecipieID" />
+            </EndProperty>
+            <Condition ColumnName="RecipieID" IsNull="false" />
+          </AssociationSetMapping>
+          <EntitySetMapping Name="Ingredients">
+            <EntityTypeMapping TypeName="RecipesDbModel.Ingredient">
+              <MappingFragment StoreEntitySet="Ingredients">
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="RecipeIngredients">
+            <EntityTypeMapping TypeName="RecipesDbModel.RecipeIngredient">
+              <MappingFragment StoreEntitySet="RecipeIngredients">
+                <ScalarProperty Name="Quantity" ColumnName="Quantity" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <AssociationSetMapping Name="FK_RecipieIngredients_Ingredients" TypeName="RecipesDbModel.FK_RecipieIngredients_Ingredients" StoreEntitySet="RecipeIngredients">
+            <EndProperty Name="RecipeIngredient">
+              <ScalarProperty Name="ID" ColumnName="ID" />
+            </EndProperty>
+            <EndProperty Name="Ingredient">
+              <ScalarProperty Name="ID" ColumnName="IngredientID" />
+            </EndProperty>
+          </AssociationSetMapping>
+          <AssociationSetMapping Name="FK_RecipeIngredients_UnitsOfMeasurement" TypeName="RecipesDbModel.FK_RecipeIngredients_UnitsOfMeasurement" StoreEntitySet="RecipeIngredients">
+            <EndProperty Name="RecipeIngredient">
+              <ScalarProperty Name="ID" ColumnName="ID" />
+            </EndProperty>
+            <EndProperty Name="UnitsOfMeasurement">
+              <ScalarProperty Name="ID" ColumnName="UnitsOfMeasurementID" />
+            </EndProperty>
+            <Condition ColumnName="UnitsOfMeasurementID" IsNull="false" />
+          </AssociationSetMapping>
+          <AssociationSetMapping Name="FK_RecipieIngredients_Recipies" TypeName="RecipesDbModel.FK_RecipieIngredients_Recipies" StoreEntitySet="RecipeIngredients">
+            <EndProperty Name="RecipeIngredient">
+              <ScalarProperty Name="ID" ColumnName="ID" />
+            </EndProperty>
+            <EndProperty Name="Recipe">
+              <ScalarProperty Name="ID" ColumnName="RecipieID" />
+            </EndProperty>
+          </AssociationSetMapping>
+          </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>
   </edmx:Runtime>

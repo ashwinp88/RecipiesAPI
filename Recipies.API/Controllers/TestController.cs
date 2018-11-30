@@ -9,6 +9,7 @@ using System.Web.Http.Cors;
 namespace Recipies.API.Controllers
 {
     [EnableCors("*","*","*")]
+    [RoutePrefix("api/Test")]
     public class TestController : ApiController
     {
         static List<string> values = new List<string> { "1", "2" };
@@ -22,7 +23,7 @@ namespace Recipies.API.Controllers
         // GET: api/Test/5
         public IHttpActionResult Get(int id)
         {
-            if (values.Count - 1 > id)
+            if (values.Count - 1 >= id)
             {
                 return Ok(values[id]);
             }

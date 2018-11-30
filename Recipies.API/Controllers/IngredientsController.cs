@@ -14,7 +14,7 @@ using Recipies.Objects;
 namespace Recipies.API.Controllers
 {
     [EnableCors("*", "*", "*")]
-    [RoutePrefix("Ingredients")]
+    [RoutePrefix("api/Ingredients")]
     [ClientCacheControlFilter]
     public class IngredientsController : ApiController
     {
@@ -22,6 +22,12 @@ namespace Recipies.API.Controllers
         {
             public IQueryable<Ingredient> Ingredients { get; set; }
             public int Length { get; set; }
+        }
+
+        private sealed class Ingredient
+        {
+            public long ID { get; set; }
+            public string Description { get; set; }
         }
 
         private RecipiesDbEntities db = new RecipiesDbEntities();
@@ -33,11 +39,13 @@ namespace Recipies.API.Controllers
             IQueryable<Ingredient> pagedIngredients;
             if (pageSize == 0)
             {
-                pagedIngredients = db.Ingredients.OrderBy(r => r.Description);
+                pagedIngredients = db.Ingredients.Select(r => new Ingredient {ID = r.ID, Description = r.Description}).
+                                    OrderBy(r => r.Description);
             }
             else
             {
-                pagedIngredients = db.Ingredients.OrderBy(r => r.Description).Skip((pageNumber) * pageSize).Take(pageSize);
+                pagedIngredients = db.Ingredients.Select(r => new Ingredient { ID = r.ID, Description = r.Description }).
+                                   OrderBy(r => r.Description).Skip((pageNumber) * pageSize).Take(pageSize);
             }            
             var res = new Response { Ingredients = pagedIngredients, Length = db.Ingredients.Count() };
             //var msg = Request.CreateResponse(HttpStatusCode.OK, res);
@@ -50,7 +58,7 @@ namespace Recipies.API.Controllers
         public IHttpActionResult GetByName(string description, int pageSize = 10, int pageNumber = 0)
         {
             var ingredients = db.Ingredients.AsQueryable().
-                              Where(r => r.Description.Contains(description));
+                              Where(r => r.Description.Contains(description)).Select(r => new Ingredient { ID = r.ID, Description = r.Description });
             var pagedIngredients = ingredients.
                                    OrderBy(r => r.Description).
                                    Skip((pageNumber) * pageSize).
@@ -64,7 +72,7 @@ namespace Recipies.API.Controllers
         // POST
         [Authorize]
         [ValidateModelStateFilter]
-        public async Task<HttpResponseMessage> Post(Ingredient ingredient)
+        public async Task<HttpResponseMessage> Post(Recipies.Objects.Ingredient ingredient)
         {
             if (!IngredientExists(ingredient.Description))
             {
@@ -84,7 +92,7 @@ namespace Recipies.API.Controllers
         [Authorize]
         public async Task<IHttpActionResult> Delete(long id)
         {
-            Ingredient ingredient = await db.Ingredients.FindAsync(id);
+            Recipies.Objects.Ingredient ingredient = await db.Ingredients.FindAsync(id);
             if (ingredient == null)
             {
                 return NotFound();
@@ -98,7 +106,7 @@ namespace Recipies.API.Controllers
         //PUT
         [Authorize]
         [HttpPut, HttpPatch]
-        public async Task<IHttpActionResult> Put(long id, Ingredient ingredient)
+        public async Task<IHttpActionResult> Put(long id, Recipies.Objects.Ingredient ingredient)
         {
             db.Entry(ingredient).State = EntityState.Modified;
             try

@@ -7,6 +7,8 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
+using System.Runtime.Serialization;
+
 namespace Recipies.Objects
 {
     using System;
@@ -17,10 +19,10 @@ namespace Recipies.Objects
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Recipe()
         {
-            this.RecipeDirections = new HashSet<RecipeDirection>();
-            this.RecipeIngredients = new HashSet<RecipeIngredient>();
             this.UserRecipeBookMarks = new HashSet<UserRecipeBookMark>();
             this.UserRecipeRatings = new HashSet<UserRecipeRating>();
+            this.RecipeDirections = new HashSet<RecipeDirection>();
+            this.RecipeIngredients = new HashSet<RecipeIngredient>();
         }
     
         public long ID { get; set; }
@@ -33,12 +35,15 @@ namespace Recipies.Objects
         public Nullable<bool> Complete { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<RecipeDirection> RecipeDirections { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<RecipeIngredient> RecipeIngredients { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<UserRecipeBookMark> UserRecipeBookMarks { get; set; }
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<UserRecipeRating> UserRecipeRatings { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<RecipeDirection> RecipeDirections { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<RecipeIngredient> RecipeIngredients { get; set; }
     }
 }

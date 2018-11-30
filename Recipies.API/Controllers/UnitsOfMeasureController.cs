@@ -16,7 +16,7 @@ using Recipies.Objects;
 namespace Recipies.API.Controllers
 {
     [EnableCors("*", "*", "*")]
-    [RoutePrefix("UnitsOfMeasure")]
+    [RoutePrefix("api/UnitsOfMeasure")]
     [ClientCacheControlFilter]
     public class UnitsOfMeasureController : ApiController
     {
@@ -24,6 +24,13 @@ namespace Recipies.API.Controllers
         {
             public IQueryable<UnitsOfMeasurement> UnitsOfMeasurements { get; set; }
             public int Length { get; set; }
+        }
+
+        private sealed class UnitsOfMeasurement
+        {
+            public long ID { get; set; }
+            public string Description { get; set; }
+            public string Abbreviation { get; set; }
         }
 
         private RecipiesDbEntities db = new RecipiesDbEntities();
@@ -35,11 +42,13 @@ namespace Recipies.API.Controllers
             IQueryable<UnitsOfMeasurement> pagedResults;
             if (pageSize == 0)
             {
-                pagedResults = db.UnitsOfMeasurements.OrderBy(r => r.Abbreviation);
+                pagedResults = db.UnitsOfMeasurements.Select(r => new UnitsOfMeasurement { ID = r.ID, Description = r.Description, Abbreviation = r.Abbreviation}).
+                               OrderBy(r => r.Abbreviation);
             }
             else
             {
-                pagedResults = db.UnitsOfMeasurements.OrderBy(r => r.Abbreviation).Skip((pageNumber) * pageSize).Take(pageSize);
+                pagedResults = db.UnitsOfMeasurements.Select(r => new UnitsOfMeasurement { ID = r.ID, Description = r.Description, Abbreviation = r.Abbreviation }).
+                               OrderBy(r => r.Abbreviation).Skip((pageNumber) * pageSize).Take(pageSize);
             }            
             var res = new Response { UnitsOfMeasurements = pagedResults, Length = db.UnitsOfMeasurements.Count() };
             return Ok(res);
@@ -50,7 +59,8 @@ namespace Recipies.API.Controllers
         public IHttpActionResult GetByName(string description, int pageSize = 10, int pageNumber = 0)
         {
             var results = db.UnitsOfMeasurements.AsQueryable().
-                          Where(r => r.Description.Contains(description));
+                          Where(r => r.Description.Contains(description)).
+                          Select(r => new UnitsOfMeasurement { ID = r.ID, Description = r.Description, Abbreviation = r.Abbreviation });
             var pagedResults = results.
                                OrderBy(r => r.Description).
                                Skip((pageNumber) * pageSize).
@@ -62,7 +72,7 @@ namespace Recipies.API.Controllers
         // POST
         [Authorize]
         [ValidateModelStateFilter]
-        public async Task<HttpResponseMessage> Post(UnitsOfMeasurement unitsOfMeasurement)
+        public async Task<HttpResponseMessage> Post(Recipies.Objects.UnitsOfMeasurement unitsOfMeasurement)
         {
             if (!UnitsOfMeasurementExists(unitsOfMeasurement.Description))
             {
@@ -82,7 +92,7 @@ namespace Recipies.API.Controllers
         [Authorize]
         public async Task<IHttpActionResult> Delete(long id)
         {
-            UnitsOfMeasurement unitsOfMeasurement = await db.UnitsOfMeasurements.FindAsync(id);
+            Recipies.Objects.UnitsOfMeasurement unitsOfMeasurement = await db.UnitsOfMeasurements.FindAsync(id);
             if (unitsOfMeasurement == null)
             {
                 return NotFound();
@@ -96,7 +106,7 @@ namespace Recipies.API.Controllers
         //PUT
         [Authorize]
         [HttpPut, HttpPatch]
-        public async Task<IHttpActionResult> Put(long id, UnitsOfMeasurement unitOfMeasurement)
+        public async Task<IHttpActionResult> Put(long id, Recipies.Objects.UnitsOfMeasurement unitOfMeasurement)
         {
             db.Entry(unitOfMeasurement).State = EntityState.Modified;
             try

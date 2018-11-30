@@ -15,10 +15,10 @@ namespace Recipies.Objects
     public partial class RecipeIngredient
     {
         public long ID { get; set; }
-        public Nullable<long> UnitsOfMeasurementID { get; set; }
-        public Nullable<decimal> Quantity { get; set; }
+        public Nullable<double> Quantity { get; set; }
     
         public virtual Ingredient Ingredient { get; set; }
+        public virtual UnitsOfMeasurement UnitsOfMeasurement { get; set; }
         public virtual Recipe Recipe { get; set; }
     }
 }

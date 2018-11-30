@@ -26,13 +26,13 @@ namespace Recipies.Objects
         }
     
         public virtual DbSet<Image> Images { get; set; }
-        public virtual DbSet<Ingredient> Ingredients { get; set; }
-        public virtual DbSet<RecipeDirection> RecipeDirections { get; set; }
-        public virtual DbSet<RecipeIngredient> RecipeIngredients { get; set; }
         public virtual DbSet<Recipe> Recipes { get; set; }
         public virtual DbSet<UnitsOfMeasurement> UnitsOfMeasurements { get; set; }
         public virtual DbSet<UserRecipeBookMark> UserRecipeBookMarks { get; set; }
         public virtual DbSet<UserRecipeRating> UserRecipeRatings { get; set; }
         public virtual DbSet<AspNetUser> AspNetUsers { get; set; }
+        public virtual DbSet<RecipeDirection> RecipeDirections { get; set; }
+        public virtual DbSet<Ingredient> Ingredients { get; set; }
+        public virtual DbSet<RecipeIngredient> RecipeIngredients { get; set; }
     }
 }

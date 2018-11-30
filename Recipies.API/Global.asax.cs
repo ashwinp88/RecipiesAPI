@@ -12,6 +12,7 @@ namespace Recipies.API
         protected void Application_Start()
         {
             GlobalConfiguration.Configure(WebApiConfig.Register);
+            // GlobalConfiguration.Configure(config => config.MapHttpAttributeRoutes());
         }
 
         internal protected void Application_BeginRequest(object sender, EventArgs e)

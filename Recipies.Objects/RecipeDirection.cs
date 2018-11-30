@@ -16,6 +16,7 @@ namespace Recipies.Objects
     {
         public long ID { get; set; }
         public Nullable<short> Step { get; set; }
+        public string StepTitle { get; set; }
         public string StepInstructions { get; set; }
         public Nullable<byte> TimeSpanHours { get; set; }
         public Nullable<byte> TimeSpanMinutes { get; set; }

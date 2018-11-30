@@ -9,7 +9,7 @@ using System.Web.Http;
 
 namespace Recipies.API.Controllers
 {
-    [RoutePrefix("Images")]
+    [RoutePrefix("api/Images")]
     public class ImagesController : ApiController
     {
         private RecipiesDbEntities db = new RecipiesDbEntities();

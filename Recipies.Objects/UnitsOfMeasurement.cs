@@ -7,6 +7,8 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
+using System.Runtime.Serialization;
+
 namespace Recipies.Objects
 {
     using System;
@@ -14,8 +16,17 @@ namespace Recipies.Objects
     
     public partial class UnitsOfMeasurement
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public UnitsOfMeasurement()
+        {
+            this.RecipeIngredients = new HashSet<RecipeIngredient>();
+        }
+    
         public long ID { get; set; }
         public string Description { get; set; }
         public string Abbreviation { get; set; }
+    
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<RecipeIngredient> RecipeIngredients { get; set; }
     }
 }
