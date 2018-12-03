@@ -10,6 +10,8 @@ using System.Web.Http;
 using System.Web.Http.Cors;
 using Recipies.API.Filters;
 using Recipies.Objects;
+using Ingredient = Recipies.API.Models.Ingredient;
+
 
 namespace Recipies.API.Controllers
 {
@@ -24,11 +26,7 @@ namespace Recipies.API.Controllers
             public int Length { get; set; }
         }
 
-        private sealed class Ingredient
-        {
-            public long ID { get; set; }
-            public string Description { get; set; }
-        }
+       
 
         private RecipiesDbEntities db = new RecipiesDbEntities();
 

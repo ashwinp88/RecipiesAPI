@@ -28,7 +28,6 @@ namespace Recipies.API.Controllers
             try
             {
                 var ret = await SearchByTitle(title);
-                removeCircularReferences(ret);
                 return Ok(ret);
             }
             catch (Exception e)
@@ -44,7 +43,7 @@ namespace Recipies.API.Controllers
         {
             try
             {
-                await saveRecipe(recipe);
+                await SaveRecipe(recipe);
                 return Ok(recipe.Recipe_);
             }
             catch (Exception e)
@@ -68,7 +67,7 @@ namespace Recipies.API.Controllers
         }
 
 #region Helpers
-        private async Task<int> saveRecipe(CreateRecipeModel recipe)
+        private async Task<int> SaveRecipe(CreateRecipeModel recipe)
         {
             try
             {
@@ -123,7 +122,7 @@ namespace Recipies.API.Controllers
                
                 db.RecipeIngredients.AddRange(recipe.RecipeIngredients_);
                 
-                foreach (RecipeDirection recipeStep in recipe.RecipeSteps_)
+                foreach (var recipeStep in recipe.RecipeSteps_)
                 {
                     recipeStep.Recipe = recipe.Recipe_;
                     db.RecipeDirections.Add(recipeStep);
@@ -144,11 +143,70 @@ namespace Recipies.API.Controllers
             }
         }
 
-        private async Task<List<Recipe>> SearchByTitle(string title)
+        private async Task<List<FetchRecipeModel>> SearchByTitle(string title)
         {
+            var ret = new List<FetchRecipeModel>();
             try
             {
-                return await db.Recipes.Where(r => r.Title.Contains(title)).ToListAsync();
+                var recipes = await db.Recipes.Where(r => r.Title.Contains(title)).ToListAsync();
+                foreach (var recipe in recipes)
+                {
+                    //Recipe Header
+                    var newRecipe = new Models.Recipe
+                    {
+                        ID = recipe.ID,
+                        Title = recipe.Title,
+                        Description = recipe.Description,
+                        TotalTimeNeededHours = recipe.TotalTimeNeededHours,
+                        TotalTimeNeededMinutes = recipe.TotalTimeNeededMinutes,
+                        CreatedByUser = GetUserName(recipe.CreatedByUser),
+                        AverageRecipieRating = recipe.AverageRecipieRating,
+                        Complete = recipe.Complete
+                    };
+                    //Recipe Image
+                    var newRecipeImage = new Models.Image();
+                    var img = db.Images.FirstOrDefault(i => i.ImageApplyID == recipe.ID && i.ImageType == 0);
+                    if (img != null)
+                    {
+                        newRecipeImage.ID = img.ID;
+                        newRecipeImage.ImageApplyID = img.ImageApplyID;
+                        newRecipeImage.ImageLocation = img.ImageLocation;
+                        newRecipeImage.ImageType = img.ImageType;
+                        newRecipeImage.seq = img.seq;
+                    }
+                    //Recipe Ingredients
+                    var newRecipeIngredients = recipe.RecipeIngredients.Select(ing => new Models.RecipeIngredient
+                    {
+                        ID = ing.ID,
+                        Ingredient = new Models.Ingredient
+                            {ID = ing.Ingredient.ID, Description = ing.Ingredient.Description},
+                        UnitOfMeasurement = new Models.UnitsOfMeasurement
+                        {
+                            ID = ing.UnitsOfMeasurement.ID, Description = ing.UnitsOfMeasurement.Description,
+                            Abbreviation = ing.UnitsOfMeasurement.Abbreviation
+                        }
+                    }).ToList();
+                    //Recipe Directions
+                    var newRecipeDirections = recipe.RecipeDirections.Select(step => new Models.RecipeDirection
+                        {
+                            ID = step.ID,
+                            Step = step.Step,
+                            StepTitle = step.StepTitle,
+                            StepInstructions = step.StepInstructions,
+                            TimeSpanHours = step.TimeSpanHours,
+                            TimeSpanMinutes = step.TimeSpanMinutes
+                        }).ToList();
+                    //Construct fetch response
+                    ret.Add(new FetchRecipeModel
+                    {
+                        Recipe = newRecipe,
+                        RecipeImage = newRecipeImage,
+                        RecipeIngredients = newRecipeIngredients,
+                        RecipeDirections = newRecipeDirections
+                    });
+                }
+
+                return ret;
             }
             catch (Exception e)
             {
@@ -157,24 +215,35 @@ namespace Recipies.API.Controllers
             }
         }
 
-        private void removeCircularReferences(List<Recipe> recipes)
-        {
-            foreach (var recipe in recipes)
-            {
-                foreach (var recipeIngredient in recipe.RecipeIngredients)
-                {
-                    recipeIngredient.Recipe = null;
-                    recipeIngredient.Ingredient.RecipeIngredients = null;
-                    recipeIngredient.UnitsOfMeasurement.RecipeIngredients = null;
-                }
+        //private void RemoveCircularReferences(IEnumerable<Recipe> recipes)
+        //{
+        //    foreach (var recipe in recipes)
+        //    {
+        //        recipe.CreatedByUser = GetUserName(recipe.CreatedByUser);
+        //        foreach (var recipeIngredient in recipe.RecipeIngredients)
+        //        {
+        //            recipeIngredient.Recipe = null;
+        //            recipeIngredient.Ingredient.RecipeIngredients = null;
+        //            recipeIngredient.UnitsOfMeasurement.RecipeIngredients = null;
+        //        }
 
-                foreach (var recipeDirection in recipe.RecipeDirections)
-                {
-                    recipeDirection.Recipe = null;
-                }
+        //        foreach (var recipeDirection in recipe.RecipeDirections)
+        //        {
+        //            recipeDirection.Recipe = null;
+        //        }
 
                 
+        //    }
+        //}
+
+        private string GetUserName(string uid)
+        {
+            var user = db.AspNetUsers.Find(uid);
+            if (user != null)
+            {
+                return user.UserName;
             }
+            return "anonymous";
         }
 #endregion Helpers
 

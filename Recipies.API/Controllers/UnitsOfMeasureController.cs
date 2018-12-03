@@ -12,6 +12,9 @@ using System.Web.Http.Cors;
 using System.Web.Http.Description;
 using Recipies.API.Filters;
 using Recipies.Objects;
+using UnitsOfMeasurement = Recipies.API.Models.UnitsOfMeasurement;
+
+//using Recipies.Objects;
 
 namespace Recipies.API.Controllers
 {
@@ -26,12 +29,7 @@ namespace Recipies.API.Controllers
             public int Length { get; set; }
         }
 
-        private sealed class UnitsOfMeasurement
-        {
-            public long ID { get; set; }
-            public string Description { get; set; }
-            public string Abbreviation { get; set; }
-        }
+       
 
         private RecipiesDbEntities db = new RecipiesDbEntities();
 
