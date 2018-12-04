@@ -184,7 +184,8 @@ namespace Recipies.API.Controllers
                         {
                             ID = ing.UnitsOfMeasurement.ID, Description = ing.UnitsOfMeasurement.Description,
                             Abbreviation = ing.UnitsOfMeasurement.Abbreviation
-                        }
+                        },
+                        Quantity = ing.Quantity
                     }).ToList();
                     //Recipe Directions
                     var newRecipeDirections = recipe.RecipeDirections.Select(step => new Models.RecipeDirection

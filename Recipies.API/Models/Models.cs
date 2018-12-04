@@ -66,7 +66,7 @@ namespace Recipies.API.Models
         public long ID { get; set; }
         public Ingredient Ingredient { get; set; }
         public UnitsOfMeasurement UnitOfMeasurement { get; set; }
-        public double Quantity { get; set; }
+        public double? Quantity { get; set; }
     }
 
 }
