@@ -7,8 +7,6 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-using System.Runtime.Serialization;
-
 namespace Recipies.Objects
 {
     using System;
@@ -33,16 +31,14 @@ namespace Recipies.Objects
         public string CreatedByUser { get; set; }
         public Nullable<decimal> AverageRecipieRating { get; set; }
         public Nullable<bool> Complete { get; set; }
+        public Nullable<System.DateTime> CreatedOn { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<UserRecipeBookMark> UserRecipeBookMarks { get; set; }
-
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<UserRecipeRating> UserRecipeRatings { get; set; }
-
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<RecipeDirection> RecipeDirections { get; set; }
-
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<RecipeIngredient> RecipeIngredients { get; set; }
     }

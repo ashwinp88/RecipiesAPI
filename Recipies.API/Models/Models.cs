@@ -47,8 +47,10 @@ namespace Recipies.API.Models
         public byte? TotalTimeNeededHours { get; set; }
         public byte? TotalTimeNeededMinutes { get; set; }
         public string CreatedByUser { get; set; }
-        public decimal? AverageRecipieRating { get; set; }
+        public decimal? AverageRecipeRating { get; set; }
         public bool? Complete { get; set; }
+
+        public DateTime? CreatedOn { get; set; }
     }
 
     public class RecipeDirection

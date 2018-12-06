@@ -71,70 +71,139 @@ namespace Recipies.API.Controllers
         {
             try
             {
-                db.Recipes.Add(recipe.Recipe_);
-                await db.SaveChangesAsync();
+                var newRecipe = new Objects.Recipe
+                {
+                    Title = recipe.Recipe_.Title,
+                    Description = recipe.Recipe_.Description,
+                    TotalTimeNeededHours = recipe.Recipe_.TotalTimeNeededHours,
+                    TotalTimeNeededMinutes = recipe.Recipe_.TotalTimeNeededMinutes,
+                    CreatedByUser = recipe.Recipe_.CreatedByUser,
+                    Complete = true,
+                    CreatedOn = DateTime.Now
+                };
+
+                db.Recipes.Add(newRecipe);
+
                 foreach (var recipeIngredient in recipe.RecipeIngredients_)
                 {
-                    recipeIngredient.Recipe = recipe.Recipe_;
-                    if (recipeIngredient.Ingredient.ID == 0)
+                    var ingredient =
+                        db.Ingredients.FirstOrDefault(i => i.Description == recipeIngredient.Ingredient.Description) ??
+                        new Objects.Ingredient { Description = recipeIngredient.Ingredient.Description };
+                    var unitOfMeasure = db.UnitsOfMeasurements.FirstOrDefault(u =>
+                                            u.Description == recipeIngredient.UnitOfMeasurement.Description) ??
+                                        new Objects.UnitsOfMeasurement { Description = recipeIngredient.UnitOfMeasurement.Description };
+                    var newRecipeIngredient = new Objects.RecipeIngredient
                     {
-                        //Ingredient might be saved but front end did not get it for some reason
-                        var ingredient = db.Ingredients.FirstOrDefault(i =>
-                            i.Description == recipeIngredient.Ingredient.Description);
-                        if (ingredient != null)
-                        {
-                            //found ingredient in db
-                            recipeIngredient.Ingredient = ingredient;
-                        }
-                        //did not find it. Have to save it.
-                        else
-                        {
-                            db.Ingredients.Add(recipeIngredient.Ingredient);
-                            await db.SaveChangesAsync();
-                        }
-                    }
-                    else
-                    {
-                        recipeIngredient.Ingredient = db.Ingredients.Find(recipeIngredient.Ingredient.ID);
-                    }
-                    if (recipeIngredient.UnitsOfMeasurement.ID == 0)
-                    {
-                        //Unit of measurement might be saved before but front end did not get it for some reason
-                        var unitOfMeasure = db.UnitsOfMeasurements.FirstOrDefault(m =>
-                            m.Description == recipeIngredient.UnitsOfMeasurement.Description);
-                        if (unitOfMeasure != null)
-                        {
-                            recipeIngredient.UnitsOfMeasurement = unitOfMeasure;
-                        }
-                        else
-                        {
-                            //did not find it. Have to save it.
-                            db.UnitsOfMeasurements.Add(recipeIngredient.UnitsOfMeasurement);
-                            await db.SaveChangesAsync();
-                        }
-                    }
-                    else
-                    {
-                        recipeIngredient.UnitsOfMeasurement =
-                            db.UnitsOfMeasurements.Find(recipeIngredient.UnitsOfMeasurement.ID);
-                    }
-                }
-               
-                db.RecipeIngredients.AddRange(recipe.RecipeIngredients_);
-                
-                foreach (var recipeStep in recipe.RecipeSteps_)
-                {
-                    recipeStep.Recipe = recipe.Recipe_;
-                    db.RecipeDirections.Add(recipeStep);
+                        Recipe = newRecipe,
+                        Ingredient = ingredient,
+                        UnitsOfMeasurement = unitOfMeasure,
+                        Quantity = recipeIngredient.Quantity
+                    };
+
+                    db.RecipeIngredients.Add(newRecipeIngredient);
                 }
 
-                if (recipe.RecipeImage_ != null)
+                foreach (var step in recipe.RecipeSteps_)
                 {
-                    recipe.RecipeImage_.ImageApplyID = recipe.Recipe_.ID;
-                    db.Images.Add(recipe.RecipeImage_);
+                    var newStep = new Objects.RecipeDirection
+                    {
+                        Recipe = newRecipe,
+                        Step = step.Step,
+                        StepTitle = step.StepTitle,
+                        StepInstructions = step.StepInstructions,
+                        TimeSpanHours = step.TimeSpanHours,
+                        TimeSpanMinutes = step.TimeSpanMinutes
+                    };
+
+                    db.RecipeDirections.Add(newStep);
+
+                }
+
+                await db.SaveChangesAsync();
+
+                if (recipe.RecipeImage_ != null &&
+                    !string.IsNullOrWhiteSpace(recipe.RecipeImage_.ImageLocation))
+                {
+                    var newRecipeImage = new Objects.Image
+                    {
+                        ImageType = 0,
+                        seq = recipe.RecipeImage_.seq,
+                        ImageApplyID = newRecipe.ID,
+                        ImageLocation = recipe.RecipeImage_.ImageLocation
+                    };
+
+                    db.Images.Add(newRecipeImage);
                 }
 
                 return await db.SaveChangesAsync();
+
+                #region old_logic
+
+                //db.Recipes.Add(recipe.Recipe_);
+                //await db.SaveChangesAsync();
+                //foreach (var recipeIngredient in recipe.RecipeIngredients_)
+                //{
+                //    recipeIngredient.Recipe = recipe.Recipe_;
+                //    if (recipeIngredient.Ingredient.ID == 0)
+                //    {
+                //        //Ingredient might be saved but front end did not get it for some reason
+                //        var ingredient = db.Ingredients.FirstOrDefault(i =>
+                //            i.Description == recipeIngredient.Ingredient.Description);
+                //        if (ingredient != null)
+                //        {
+                //            //found ingredient in db
+                //            recipeIngredient.Ingredient = ingredient;
+                //        }
+                //        //did not find it. Have to save it.
+                //        else
+                //        {
+                //            db.Ingredients.Add(recipeIngredient.Ingredient);
+                //            await db.SaveChangesAsync();
+                //        }
+                //    }
+                //    else
+                //    {
+                //        recipeIngredient.Ingredient = db.Ingredients.Find(recipeIngredient.Ingredient.ID);
+                //    }
+                //    if (recipeIngredient.UnitsOfMeasurement.ID == 0)
+                //    {
+                //        //Unit of measurement might be saved before but front end did not get it for some reason
+                //        var unitOfMeasure = db.UnitsOfMeasurements.FirstOrDefault(m =>
+                //            m.Description == recipeIngredient.UnitsOfMeasurement.Description);
+                //        if (unitOfMeasure != null)
+                //        {
+                //            recipeIngredient.UnitsOfMeasurement = unitOfMeasure;
+                //        }
+                //        else
+                //        {
+                //            //did not find it. Have to save it.
+                //            db.UnitsOfMeasurements.Add(recipeIngredient.UnitsOfMeasurement);
+                //            await db.SaveChangesAsync();
+                //        }
+                //    }
+                //    else
+                //    {
+                //        recipeIngredient.UnitsOfMeasurement =
+                //            db.UnitsOfMeasurements.Find(recipeIngredient.UnitsOfMeasurement.ID);
+                //    }
+                //}
+
+                //db.RecipeIngredients.AddRange(recipe.RecipeIngredients_);
+
+                //foreach (var recipeStep in recipe.RecipeSteps_)
+                //{
+                //    recipeStep.Recipe = recipe.Recipe_;
+                //    db.RecipeDirections.Add(recipeStep);
+                //}
+
+                //if (recipe.RecipeImage_ != null)
+                //{
+                //    recipe.RecipeImage_.ImageApplyID = recipe.Recipe_.ID;
+                //    db.Images.Add(recipe.RecipeImage_);
+                //}
+                //
+                #endregion
+
             }
             catch (Exception e)
             {
@@ -160,8 +229,9 @@ namespace Recipies.API.Controllers
                         TotalTimeNeededHours = recipe.TotalTimeNeededHours,
                         TotalTimeNeededMinutes = recipe.TotalTimeNeededMinutes,
                         CreatedByUser = GetUserName(recipe.CreatedByUser),
-                        AverageRecipieRating = recipe.AverageRecipieRating,
-                        Complete = recipe.Complete
+                        AverageRecipeRating = recipe.AverageRecipieRating,
+                        Complete = recipe.Complete,
+                        CreatedOn = recipe.CreatedOn
                     };
                     //Recipe Image
                     var newRecipeImage = new Models.Image();
@@ -215,28 +285,7 @@ namespace Recipies.API.Controllers
                 throw;
             }
         }
-
-        //private void RemoveCircularReferences(IEnumerable<Recipe> recipes)
-        //{
-        //    foreach (var recipe in recipes)
-        //    {
-        //        recipe.CreatedByUser = GetUserName(recipe.CreatedByUser);
-        //        foreach (var recipeIngredient in recipe.RecipeIngredients)
-        //        {
-        //            recipeIngredient.Recipe = null;
-        //            recipeIngredient.Ingredient.RecipeIngredients = null;
-        //            recipeIngredient.UnitsOfMeasurement.RecipeIngredients = null;
-        //        }
-
-        //        foreach (var recipeDirection in recipe.RecipeDirections)
-        //        {
-        //            recipeDirection.Recipe = null;
-        //        }
-
-                
-        //    }
-        //}
-
+        
         private string GetUserName(string uid)
         {
             var user = db.AspNetUsers.Find(uid);

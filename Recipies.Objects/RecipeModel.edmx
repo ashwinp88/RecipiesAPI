@@ -73,6 +73,7 @@
           <Property Name="CreatedByUser" Type="nvarchar" MaxLength="128" />
           <Property Name="AverageRecipieRating" Type="numeric" Precision="1" Scale="0" />
           <Property Name="Complete" Type="bit" />
+          <Property Name="CreatedOn" Type="date" />
         </EntityType>
         <EntityType Name="UnitsOfMeasurement">
           <Key>
@@ -244,6 +245,7 @@
           <Property Name="Complete" Type="Boolean" />
           <NavigationProperty Name="RecipeDirections" Relationship="RecipesDbModel.FK_RecipieDirections_Recipies" FromRole="Recipe" ToRole="RecipeDirection" />
           <NavigationProperty Name="RecipeIngredients" Relationship="RecipesDbModel.FK_RecipieIngredients_Recipies" FromRole="Recipe" ToRole="RecipeIngredient" />
+          <Property Name="CreatedOn" Type="DateTime" Precision="0" />
         </EntityType>
         <EntityType Name="UnitsOfMeasurement">
           <Key>
@@ -405,6 +407,7 @@
           <EntitySetMapping Name="Recipes">
             <EntityTypeMapping TypeName="RecipesDbModel.Recipe">
               <MappingFragment StoreEntitySet="Recipes">
+                <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
                 <ScalarProperty Name="Complete" ColumnName="Complete" />
                 <ScalarProperty Name="ID" ColumnName="ID" />
                 <ScalarProperty Name="Title" ColumnName="Title" />
