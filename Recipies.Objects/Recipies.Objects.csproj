@@ -92,6 +92,9 @@
     <Compile Include="UserRecipeBookMark.cs">
       <DependentUpon>RecipeModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="UserRecipeComment.cs">
+      <DependentUpon>RecipeModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="UserRecipeRating.cs">
       <DependentUpon>RecipeModel.tt</DependentUpon>
     </Compile>

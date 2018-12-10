@@ -6,8 +6,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <TimeStampOfAssociatedLegacyPublishXmlFile />
-    <EncryptedPassword>AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAMEXD3YUEb0eEr2oJYXq6hgAAAAACAAAAAAADZgAAwAAAABAAAADPU0uRLWFyqPfGsqwhpCaDAAAAAASAAACgAAAAEAAAAIbcigX0p7a2mFnqWM8UarGAAAAAunINYHpWDi/kjqqvUq4LVuONUZVZqtuytsvHDDNAsxv+O8A7DB0tKmg26AG24Pb1id8ko1k3MSfzlaPd9NlN1RZZBFqkxVrkXbPfH9QtY8rh1JbvgFGOgihvzzNS6IVDjNGXyVdasQ8lrUmWNWRVkQy4F2fiJwIKYfQD6kFKkqsUAAAAuMk1CwYCfzmo3E/Cz5v8OUMJiVw=</EncryptedPassword>
-    <_PublishTargetUrl>ftp://ftp.gear.host/site\wwwroot\recipesAPI</_PublishTargetUrl>
+    <_PublishTargetUrl>C:\Angular Projects\API v2\RecipiesAPI\Recipies.API\bin\Release\Publish</_PublishTargetUrl>
   </PropertyGroup>
   <ItemGroup>
     <File Include="bin/EntityFramework.dll">
@@ -53,19 +52,19 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>11/13/2012 12:19:34</publishTime>
     </File>
     <File Include="bin/Recipies.API.dll">
-      <publishTime>12/06/2018 13:10:25</publishTime>
+      <publishTime>12/07/2018 11:40:18</publishTime>
     </File>
     <File Include="bin/Recipies.API.pdb">
-      <publishTime>12/06/2018 13:10:25</publishTime>
+      <publishTime>12/07/2018 11:40:18</publishTime>
     </File>
     <File Include="bin/Recipies.Objects.dll">
-      <publishTime>12/06/2018 13:10:25</publishTime>
+      <publishTime>12/07/2018 11:40:18</publishTime>
     </File>
     <File Include="bin/Recipies.Objects.dll.config">
-      <publishTime>12/06/2018 13:09:24</publishTime>
+      <publishTime>12/06/2018 16:06:51</publishTime>
     </File>
     <File Include="bin/Recipies.Objects.pdb">
-      <publishTime>12/06/2018 13:10:25</publishTime>
+      <publishTime>12/07/2018 11:40:18</publishTime>
     </File>
     <File Include="bin/roslyn/csc.exe">
       <publishTime>05/24/2018 14:38:22</publishTime>
@@ -230,7 +229,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>11/22/2018 13:47:16</publishTime>
     </File>
     <File Include="Web.config">
-      <publishTime>12/06/2018 13:10:38</publishTime>
+      <publishTime>12/07/2018 11:40:28</publishTime>
     </File>
   </ItemGroup>
 </Project>

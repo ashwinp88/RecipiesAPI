@@ -34,5 +34,6 @@ namespace Recipies.Objects
         public virtual DbSet<RecipeDirection> RecipeDirections { get; set; }
         public virtual DbSet<Ingredient> Ingredients { get; set; }
         public virtual DbSet<RecipeIngredient> RecipeIngredients { get; set; }
+        public virtual DbSet<UserRecipeComment> UserRecipeComments { get; set; }
     }
 }

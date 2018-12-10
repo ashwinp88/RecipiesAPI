@@ -20,6 +20,42 @@ namespace Recipies.API.Controllers
         private RecipiesDbEntities db = new RecipiesDbEntities();
 
         [HttpGet]
+        [Route("Comments")]
+        public async Task<IHttpActionResult> GetRecipeComments(long recipeID)
+        {
+            if (recipeID == 0)
+                return StatusCode(HttpStatusCode.NotAcceptable);
+            try
+            {
+                var ret = await FetchCommentsByRecipeID(recipeID);
+                return Ok(ret);
+            }
+            catch (Exception e)
+            {
+                return InternalServerError(e);
+            }
+        }
+
+        [Authorize]
+        [ValidateModelStateFilter]
+        [Route("Comments")]
+        [HttpPost]
+        public async Task<IHttpActionResult> PostRecipeComment(RecipeComment comment)
+        {
+            try
+            {
+                await SaveRecipeComment(comment);
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return InternalServerError(e);
+            }
+
+        }
+
+        [HttpGet]
         [Route("Search")]
         public async Task<IHttpActionResult> Get(string title)
         {
@@ -28,6 +64,24 @@ namespace Recipies.API.Controllers
             try
             {
                 var ret = await SearchByTitle(title);
+                return Ok(ret);
+            }
+            catch (Exception e)
+            {
+                return InternalServerError(e);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IHttpActionResult> Get(long id)
+        {
+            if (id == 0)
+                return StatusCode(HttpStatusCode.NotAcceptable);
+            try
+            {
+                var ret = await SearchByID(id);
+                if (ret == null)
+                    return NotFound();
                 return Ok(ret);
             }
             catch (Exception e)
@@ -87,11 +141,23 @@ namespace Recipies.API.Controllers
                 foreach (var recipeIngredient in recipe.RecipeIngredients_)
                 {
                     var ingredient =
-                        db.Ingredients.FirstOrDefault(i => i.Description == recipeIngredient.Ingredient.Description) ??
-                        new Objects.Ingredient { Description = recipeIngredient.Ingredient.Description };
+                        db.Ingredients.FirstOrDefault(i => i.Description == recipeIngredient.Ingredient.Description);
+                    if (ingredient == null)
+                    {
+                        ingredient = new Objects.Ingredient { Description = recipeIngredient.Ingredient.Description };
+                        db.Ingredients.Add(ingredient);
+                        db.SaveChanges();
+                    }
+
                     var unitOfMeasure = db.UnitsOfMeasurements.FirstOrDefault(u =>
-                                            u.Description == recipeIngredient.UnitOfMeasurement.Description) ??
-                                        new Objects.UnitsOfMeasurement { Description = recipeIngredient.UnitOfMeasurement.Description };
+                        u.Description == recipeIngredient.UnitOfMeasurement.Description);
+                    if (unitOfMeasure == null)
+                    {
+                        unitOfMeasure = new Objects.UnitsOfMeasurement { Description = recipeIngredient.UnitOfMeasurement.Description };
+                        db.UnitsOfMeasurements.Add(unitOfMeasure);
+                        db.SaveChanges();
+                    }
+                        
                     var newRecipeIngredient = new Objects.RecipeIngredient
                     {
                         Recipe = newRecipe,
@@ -212,6 +278,81 @@ namespace Recipies.API.Controllers
             }
         }
 
+        private async Task<FetchRecipeModel> SearchByID(long ID)
+        {
+            var ret = new FetchRecipeModel();
+            try
+            {
+                var recipe = await db.Recipes.FindAsync(ID);
+                if (recipe == null)
+                {
+                    return null;
+                }
+                var newRecipe = new Models.Recipe
+                {
+                    ID = recipe.ID,
+                    Title = recipe.Title,
+                    Description = recipe.Description,
+                    TotalTimeNeededHours = recipe.TotalTimeNeededHours,
+                    TotalTimeNeededMinutes = recipe.TotalTimeNeededMinutes,
+                    CreatedByUser = GetUserName(recipe.CreatedByUser),
+                    AverageRecipeRating = recipe.AverageRecipieRating,
+                    Complete = recipe.Complete,
+                    CreatedOn = recipe.CreatedOn
+                };
+                //Recipe Image
+                var newRecipeImage = new Models.Image();
+                var img = db.Images.FirstOrDefault(i => i.ImageApplyID == recipe.ID && i.ImageType == 0);
+                if (img != null)
+                {
+                    newRecipeImage.ID = img.ID;
+                    newRecipeImage.ImageApplyID = img.ImageApplyID;
+                    newRecipeImage.ImageLocation = img.ImageLocation;
+                    newRecipeImage.ImageType = img.ImageType;
+                    newRecipeImage.seq = img.seq;
+                }
+                //Recipe Ingredients
+                var newRecipeIngredients = recipe.RecipeIngredients.Select(ing => new Models.RecipeIngredient
+                {
+                    ID = ing.ID,
+                    Ingredient = new Models.Ingredient
+                    { ID = ing.Ingredient.ID, Description = ing.Ingredient.Description },
+                    UnitOfMeasurement = new Models.UnitsOfMeasurement
+                    {
+                        ID = ing.UnitsOfMeasurement.ID,
+                        Description = ing.UnitsOfMeasurement.Description,
+                        Abbreviation = ing.UnitsOfMeasurement.Abbreviation
+                    },
+                    Quantity = ing.Quantity
+                }).ToList();
+                //Recipe Directions
+                var newRecipeDirections = recipe.RecipeDirections.Select(step => new Models.RecipeDirection
+                {
+                    ID = step.ID,
+                    Step = step.Step,
+                    StepTitle = step.StepTitle,
+                    StepInstructions = step.StepInstructions,
+                    TimeSpanHours = step.TimeSpanHours,
+                    TimeSpanMinutes = step.TimeSpanMinutes
+                }).ToList();
+                //Construct fetch response
+                ret = new FetchRecipeModel
+                {
+                    Recipe = newRecipe,
+                    RecipeImage = newRecipeImage,
+                    RecipeIngredients = newRecipeIngredients,
+                    RecipeDirections = newRecipeDirections
+                };
+
+                return ret;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+
         private async Task<List<FetchRecipeModel>> SearchByTitle(string title)
         {
             var ret = new List<FetchRecipeModel>();
@@ -278,6 +419,44 @@ namespace Recipies.API.Controllers
                 }
 
                 return ret;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+
+        private async Task<List<RecipeComment>> FetchCommentsByRecipeID(long ID)
+        {
+            var ret = new List<RecipeComment>();
+            var recipeComments = await db.UserRecipeComments.Where(r => r.RecipeID == ID).ToListAsync();
+            foreach (var comment in recipeComments)
+            {
+                var newComment = new RecipeComment
+                {
+                    userName = GetUserName(comment.UserID),
+                    commentedOn = comment.Timestamp,
+                    comment = comment.Comment
+                };
+                ret.Add(newComment);
+            }
+            return ret;
+        }
+
+        private async Task<int> SaveRecipeComment(RecipeComment comment)
+        {
+            try
+            {
+                var newComment = new UserRecipeComment
+                {
+                    RecipeID = comment.recipeID,
+                    Comment = comment.comment,
+                    UserID = comment.userName,
+                    Timestamp = DateTime.Now
+                };
+                db.UserRecipeComments.Add(newComment);
+                return await db.SaveChangesAsync();
             }
             catch (Exception e)
             {

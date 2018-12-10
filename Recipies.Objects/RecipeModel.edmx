@@ -91,6 +91,16 @@
           <Property Name="UserID" Type="nvarchar" MaxLength="100" />
           <Property Name="RecipieID" Type="bigint" />
         </EntityType>
+        <EntityType Name="UserRecipeComments">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="RecipeID" Type="bigint" />
+          <Property Name="UserID" Type="nvarchar" MaxLength="128" />
+          <Property Name="Comment" Type="nvarchar" MaxLength="255" />
+          <Property Name="Timestamp" Type="datetime" />
+        </EntityType>
         <EntityType Name="UserRecipeRatings">
           <Key>
             <PropertyRef Name="ID" />
@@ -189,6 +199,7 @@
           <EntitySet Name="Recipes" EntityType="Self.Recipes" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="UnitsOfMeasurement" EntityType="Self.UnitsOfMeasurement" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="UserRecipeBookMarks" EntityType="Self.UserRecipeBookMarks" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="UserRecipeComments" EntityType="Self.UserRecipeComments" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="UserRecipeRatings" EntityType="Self.UserRecipeRatings" Schema="dbo" store:Type="Tables" />
           <AssociationSet Name="FK_RecipeIngredients_UnitsOfMeasurement" Association="Self.FK_RecipeIngredients_UnitsOfMeasurement">
             <End Role="UnitsOfMeasurement" EntitySet="UnitsOfMeasurement" />
@@ -319,6 +330,7 @@
             <End Role="Recipe" EntitySet="Recipes" />
             <End Role="RecipeIngredient" EntitySet="RecipeIngredients" />
           </AssociationSet>
+          <EntitySet Name="UserRecipeComments" EntityType="RecipesDbModel.UserRecipeComment" />
           </EntityContainer>
         <EntityType Name="AspNetUser">
           <Key>
@@ -387,6 +399,16 @@
           </End>
           <End Type="RecipesDbModel.RecipeIngredient" Role="RecipeIngredient" Multiplicity="*" />
         </Association>
+        <EntityType Name="UserRecipeComment">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="RecipeID" Type="Int64" />
+          <Property Name="UserID" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="Comment" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="Timestamp" Type="DateTime" Precision="3" />
+        </EntityType>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -543,6 +565,17 @@
               <ScalarProperty Name="ID" ColumnName="RecipieID" />
             </EndProperty>
           </AssociationSetMapping>
+          <EntitySetMapping Name="UserRecipeComments">
+            <EntityTypeMapping TypeName="RecipesDbModel.UserRecipeComment">
+              <MappingFragment StoreEntitySet="UserRecipeComments">
+                <ScalarProperty Name="Timestamp" ColumnName="Timestamp" />
+                <ScalarProperty Name="Comment" ColumnName="Comment" />
+                <ScalarProperty Name="UserID" ColumnName="UserID" />
+                <ScalarProperty Name="RecipeID" ColumnName="RecipeID" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

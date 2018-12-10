@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
 
@@ -69,6 +70,17 @@ namespace Recipies.API.Models
         public Ingredient Ingredient { get; set; }
         public UnitsOfMeasurement UnitOfMeasurement { get; set; }
         public double? Quantity { get; set; }
+    }
+
+    public class RecipeComment
+    {
+        [Required]
+        public long? recipeID { get; set; }
+        [Required]
+        public string userName { get; set; }
+        public DateTime? commentedOn { get; set; }
+        [Required]
+        public string comment { get; set; }
     }
 
 }
