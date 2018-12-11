@@ -90,6 +90,25 @@ namespace Recipies.API.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("Recent")]
+        public async Task<IHttpActionResult> GetRecentRecipes()
+        {
+            try
+            {
+                var recentRecipes = await db.Recipes.OrderByDescending(r => r.CreatedOn).Take(10).ToListAsync();
+                var ret = new List<FetchRecipeModel>();
+                foreach (var recipe in recentRecipes)
+                {
+                    ret.Add(constructRecipeFetchResponse(recipe));
+                }
+                return Ok(ret);
+            }
+            catch (Exception e)
+            {
+                return InternalServerError(e);
+            }
+        }
 
         [Authorize]
         [ValidateModelStateFilter]
@@ -118,6 +137,49 @@ namespace Recipies.API.Controllers
             recipe.Complete = true;
             db.SaveChanges();
             return Ok();
+        }
+
+        [Authorize]
+        [Route("Bookmark")]
+        [HttpGet]
+        public async Task<IHttpActionResult> IsRecipeBookMarked(long recipeID, string uid)
+        {
+            var record = await db.UserRecipeBookMarks.Where(r => r.Recipe.ID == recipeID && r.UserID == uid).ToListAsync();
+            if (record != null && record.Count > 0)
+                return Ok(true);
+            return Ok(false);
+        }
+
+        [Authorize]
+        [Route("Bookmark")]
+        [HttpPost]
+        public async Task<IHttpActionResult> BookmarkRecipe(long recipeID, string uid)
+        {
+            try
+            {
+                var record = await db.UserRecipeBookMarks.Where(r => r.Recipe.ID == recipeID && r.UserID == uid).ToListAsync();
+                var res = false;
+                if (record == null || record.Count == 0)
+                {
+                    var recipe = await db.Recipes.FindAsync(recipeID);
+                    var newBookMark = new Objects.UserRecipeBookMark { UserID = uid, Recipe = recipe };
+                    db.UserRecipeBookMarks.Add(newBookMark);                    
+                    res = true;
+                }
+                else
+                {
+                    db.UserRecipeBookMarks.RemoveRange(record);
+                }
+                await db.SaveChangesAsync();
+                return Ok(res);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return InternalServerError(e);
+            }
+
+
         }
 
 #region Helpers
@@ -203,73 +265,6 @@ namespace Recipies.API.Controllers
 
                 return await db.SaveChangesAsync();
 
-                #region old_logic
-
-                //db.Recipes.Add(recipe.Recipe_);
-                //await db.SaveChangesAsync();
-                //foreach (var recipeIngredient in recipe.RecipeIngredients_)
-                //{
-                //    recipeIngredient.Recipe = recipe.Recipe_;
-                //    if (recipeIngredient.Ingredient.ID == 0)
-                //    {
-                //        //Ingredient might be saved but front end did not get it for some reason
-                //        var ingredient = db.Ingredients.FirstOrDefault(i =>
-                //            i.Description == recipeIngredient.Ingredient.Description);
-                //        if (ingredient != null)
-                //        {
-                //            //found ingredient in db
-                //            recipeIngredient.Ingredient = ingredient;
-                //        }
-                //        //did not find it. Have to save it.
-                //        else
-                //        {
-                //            db.Ingredients.Add(recipeIngredient.Ingredient);
-                //            await db.SaveChangesAsync();
-                //        }
-                //    }
-                //    else
-                //    {
-                //        recipeIngredient.Ingredient = db.Ingredients.Find(recipeIngredient.Ingredient.ID);
-                //    }
-                //    if (recipeIngredient.UnitsOfMeasurement.ID == 0)
-                //    {
-                //        //Unit of measurement might be saved before but front end did not get it for some reason
-                //        var unitOfMeasure = db.UnitsOfMeasurements.FirstOrDefault(m =>
-                //            m.Description == recipeIngredient.UnitsOfMeasurement.Description);
-                //        if (unitOfMeasure != null)
-                //        {
-                //            recipeIngredient.UnitsOfMeasurement = unitOfMeasure;
-                //        }
-                //        else
-                //        {
-                //            //did not find it. Have to save it.
-                //            db.UnitsOfMeasurements.Add(recipeIngredient.UnitsOfMeasurement);
-                //            await db.SaveChangesAsync();
-                //        }
-                //    }
-                //    else
-                //    {
-                //        recipeIngredient.UnitsOfMeasurement =
-                //            db.UnitsOfMeasurements.Find(recipeIngredient.UnitsOfMeasurement.ID);
-                //    }
-                //}
-
-                //db.RecipeIngredients.AddRange(recipe.RecipeIngredients_);
-
-                //foreach (var recipeStep in recipe.RecipeSteps_)
-                //{
-                //    recipeStep.Recipe = recipe.Recipe_;
-                //    db.RecipeDirections.Add(recipeStep);
-                //}
-
-                //if (recipe.RecipeImage_ != null)
-                //{
-                //    recipe.RecipeImage_.ImageApplyID = recipe.Recipe_.ID;
-                //    db.Images.Add(recipe.RecipeImage_);
-                //}
-                //
-                #endregion
-
             }
             catch (Exception e)
             {
@@ -288,70 +283,14 @@ namespace Recipies.API.Controllers
                 {
                     return null;
                 }
-                var newRecipe = new Models.Recipe
-                {
-                    ID = recipe.ID,
-                    Title = recipe.Title,
-                    Description = recipe.Description,
-                    TotalTimeNeededHours = recipe.TotalTimeNeededHours,
-                    TotalTimeNeededMinutes = recipe.TotalTimeNeededMinutes,
-                    CreatedByUser = GetUserName(recipe.CreatedByUser),
-                    AverageRecipeRating = recipe.AverageRecipieRating,
-                    Complete = recipe.Complete,
-                    CreatedOn = recipe.CreatedOn
-                };
-                //Recipe Image
-                var newRecipeImage = new Models.Image();
-                var img = db.Images.FirstOrDefault(i => i.ImageApplyID == recipe.ID && i.ImageType == 0);
-                if (img != null)
-                {
-                    newRecipeImage.ID = img.ID;
-                    newRecipeImage.ImageApplyID = img.ImageApplyID;
-                    newRecipeImage.ImageLocation = img.ImageLocation;
-                    newRecipeImage.ImageType = img.ImageType;
-                    newRecipeImage.seq = img.seq;
-                }
-                //Recipe Ingredients
-                var newRecipeIngredients = recipe.RecipeIngredients.Select(ing => new Models.RecipeIngredient
-                {
-                    ID = ing.ID,
-                    Ingredient = new Models.Ingredient
-                    { ID = ing.Ingredient.ID, Description = ing.Ingredient.Description },
-                    UnitOfMeasurement = new Models.UnitsOfMeasurement
-                    {
-                        ID = ing.UnitsOfMeasurement.ID,
-                        Description = ing.UnitsOfMeasurement.Description,
-                        Abbreviation = ing.UnitsOfMeasurement.Abbreviation
-                    },
-                    Quantity = ing.Quantity
-                }).ToList();
-                //Recipe Directions
-                var newRecipeDirections = recipe.RecipeDirections.Select(step => new Models.RecipeDirection
-                {
-                    ID = step.ID,
-                    Step = step.Step,
-                    StepTitle = step.StepTitle,
-                    StepInstructions = step.StepInstructions,
-                    TimeSpanHours = step.TimeSpanHours,
-                    TimeSpanMinutes = step.TimeSpanMinutes
-                }).ToList();
-                //Construct fetch response
-                ret = new FetchRecipeModel
-                {
-                    Recipe = newRecipe,
-                    RecipeImage = newRecipeImage,
-                    RecipeIngredients = newRecipeIngredients,
-                    RecipeDirections = newRecipeDirections
-                };
-
-                return ret;
+                return constructRecipeFetchResponse(recipe);
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
                 throw;
             }
-        }
+        }              
 
         private async Task<List<FetchRecipeModel>> SearchByTitle(string title)
         {
@@ -361,61 +300,7 @@ namespace Recipies.API.Controllers
                 var recipes = await db.Recipes.Where(r => r.Title.Contains(title)).ToListAsync();
                 foreach (var recipe in recipes)
                 {
-                    //Recipe Header
-                    var newRecipe = new Models.Recipe
-                    {
-                        ID = recipe.ID,
-                        Title = recipe.Title,
-                        Description = recipe.Description,
-                        TotalTimeNeededHours = recipe.TotalTimeNeededHours,
-                        TotalTimeNeededMinutes = recipe.TotalTimeNeededMinutes,
-                        CreatedByUser = GetUserName(recipe.CreatedByUser),
-                        AverageRecipeRating = recipe.AverageRecipieRating,
-                        Complete = recipe.Complete,
-                        CreatedOn = recipe.CreatedOn
-                    };
-                    //Recipe Image
-                    var newRecipeImage = new Models.Image();
-                    var img = db.Images.FirstOrDefault(i => i.ImageApplyID == recipe.ID && i.ImageType == 0);
-                    if (img != null)
-                    {
-                        newRecipeImage.ID = img.ID;
-                        newRecipeImage.ImageApplyID = img.ImageApplyID;
-                        newRecipeImage.ImageLocation = img.ImageLocation;
-                        newRecipeImage.ImageType = img.ImageType;
-                        newRecipeImage.seq = img.seq;
-                    }
-                    //Recipe Ingredients
-                    var newRecipeIngredients = recipe.RecipeIngredients.Select(ing => new Models.RecipeIngredient
-                    {
-                        ID = ing.ID,
-                        Ingredient = new Models.Ingredient
-                            {ID = ing.Ingredient.ID, Description = ing.Ingredient.Description},
-                        UnitOfMeasurement = new Models.UnitsOfMeasurement
-                        {
-                            ID = ing.UnitsOfMeasurement.ID, Description = ing.UnitsOfMeasurement.Description,
-                            Abbreviation = ing.UnitsOfMeasurement.Abbreviation
-                        },
-                        Quantity = ing.Quantity
-                    }).ToList();
-                    //Recipe Directions
-                    var newRecipeDirections = recipe.RecipeDirections.Select(step => new Models.RecipeDirection
-                        {
-                            ID = step.ID,
-                            Step = step.Step,
-                            StepTitle = step.StepTitle,
-                            StepInstructions = step.StepInstructions,
-                            TimeSpanHours = step.TimeSpanHours,
-                            TimeSpanMinutes = step.TimeSpanMinutes
-                        }).ToList();
-                    //Construct fetch response
-                    ret.Add(new FetchRecipeModel
-                    {
-                        Recipe = newRecipe,
-                        RecipeImage = newRecipeImage,
-                        RecipeIngredients = newRecipeIngredients,
-                        RecipeDirections = newRecipeDirections
-                    });
+                    ret.Add(constructRecipeFetchResponse(recipe));
                 }
 
                 return ret;
@@ -441,6 +326,69 @@ namespace Recipies.API.Controllers
                 };
                 ret.Add(newComment);
             }
+            return ret;
+        }
+
+        private FetchRecipeModel constructRecipeFetchResponse(Objects.Recipe recipe)
+        {
+            var newRecipe = new Models.Recipe
+            {
+                ID = recipe.ID,
+                Title = recipe.Title,
+                Description = recipe.Description,
+                TotalTimeNeededHours = recipe.TotalTimeNeededHours,
+                TotalTimeNeededMinutes = recipe.TotalTimeNeededMinutes,
+                CreatedByUser = GetUserName(recipe.CreatedByUser),
+                AverageRecipeRating = recipe.AverageRecipieRating,
+                Complete = recipe.Complete,
+                CreatedOn = recipe.CreatedOn
+            };
+            //Recipe Image
+            var newRecipeImage = new Models.Image();
+            var img = db.Images.FirstOrDefault(i => i.ImageApplyID == recipe.ID && i.ImageType == 0);
+            if (img != null)
+            {
+                newRecipeImage.ID = img.ID;
+                newRecipeImage.ImageApplyID = img.ImageApplyID;
+                newRecipeImage.ImageLocation = img.ImageLocation;
+                newRecipeImage.ImageType = img.ImageType;
+                newRecipeImage.seq = img.seq;
+            }
+            //Recipe Ingredients
+            var newRecipeIngredients = recipe.RecipeIngredients.Select(ing => new Models.RecipeIngredient
+            {
+                ID = ing.ID,
+                Ingredient = new Models.Ingredient
+                { ID = ing.Ingredient.ID, Description = ing.Ingredient.Description },
+                UnitOfMeasurement = new Models.UnitsOfMeasurement
+                {
+                    ID = ing.UnitsOfMeasurement.ID,
+                    Description = ing.UnitsOfMeasurement.Description,
+                    Abbreviation = ing.UnitsOfMeasurement.Abbreviation
+                },
+                Quantity = ing.Quantity
+            }).ToList();
+            //Recipe Directions
+            var newRecipeDirections = recipe.RecipeDirections.Select(step => new Models.RecipeDirection
+            {
+                ID = step.ID,
+                Step = step.Step,
+                StepTitle = step.StepTitle,
+                StepInstructions = step.StepInstructions,
+                TimeSpanHours = step.TimeSpanHours,
+                TimeSpanMinutes = step.TimeSpanMinutes
+            }).ToList();
+            //Construct fetch response
+            var ret = new FetchRecipeModel
+            {
+                Recipe = newRecipe,
+                RecipeImage = newRecipeImage,
+                RecipeIngredients = newRecipeIngredients,
+                RecipeDirections = newRecipeDirections,
+                UserRecipeBookMarks = GetRecipeLikesCount(recipe.ID),
+                UserRecipeComments = GetRecipeCommentsCount(recipe.ID)
+            };
+
             return ret;
         }
 
@@ -473,6 +421,16 @@ namespace Recipies.API.Controllers
                 return user.UserName;
             }
             return "anonymous";
+        }
+
+        private int GetRecipeCommentsCount(long recipeID)
+        {
+            return db.UserRecipeComments.Count(r => r.RecipeID == recipeID);
+        }
+
+        private int GetRecipeLikesCount(long recipeID)
+        {
+            return db.UserRecipeBookMarks.Count(r => r.Recipe.ID == recipeID);
         }
 #endregion Helpers
 

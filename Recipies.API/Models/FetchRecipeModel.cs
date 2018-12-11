@@ -11,5 +11,7 @@ namespace Recipies.API.Models
         public Image RecipeImage { get; set; }
         public IEnumerable<RecipeIngredient> RecipeIngredients { get; set; }
         public IEnumerable<RecipeDirection> RecipeDirections { get; set; }
+        public int UserRecipeBookMarks { get; set; }
+        public int UserRecipeComments { get; set; }
     }
 }
