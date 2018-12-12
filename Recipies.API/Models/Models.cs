@@ -38,6 +38,7 @@ namespace Recipies.API.Models
         public byte? seq { get; set; }
         public long? ImageApplyID { get; set; }
         public string ImageLocation { get; set; }
+        public byte[] ImageBlob { get; set; }
     }
 
     public class Recipe

@@ -19,5 +19,6 @@ namespace Recipies.Objects
         public Nullable<byte> seq { get; set; }
         public Nullable<long> ImageApplyID { get; set; }
         public string ImageLocation { get; set; }
+        public byte[] ImageBlob { get; set; }
     }
 }

@@ -31,6 +31,7 @@
           <Property Name="seq" Type="tinyint" />
           <Property Name="ImageApplyID" Type="bigint" />
           <Property Name="ImageLocation" Type="nvarchar" MaxLength="255" />
+          <Property Name="ImageBlob" Type="varbinary(max)" />
         </EntityType>
         <EntityType Name="Ingredients">
           <Key>
@@ -230,16 +231,6 @@
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="RecipesDbModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
-        <EntityType Name="Image">
-          <Key>
-            <PropertyRef Name="ID" />
-          </Key>
-          <Property Name="ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="ImageType" Type="Byte" />
-          <Property Name="seq" Type="Byte" />
-          <Property Name="ImageApplyID" Type="Int64" />
-          <Property Name="ImageLocation" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
-        </EntityType>
         <EntityType Name="Recipe">
           <Key>
             <PropertyRef Name="ID" />
@@ -297,7 +288,6 @@
           <End Role="UserRecipeRatings" Type="Self.UserRecipeRating" Multiplicity="*" />
         </Association>
         <EntityContainer Name="RecipiesDbEntities" annotation:LazyLoadingEnabled="true">
-          <EntitySet Name="Images" EntityType="Self.Image" />
           <EntitySet Name="Recipes" EntityType="Self.Recipe" />
           <EntitySet Name="UnitsOfMeasurements" EntityType="Self.UnitsOfMeasurement" />
           <EntitySet Name="UserRecipeBookMarks" EntityType="Self.UserRecipeBookMark" />
@@ -331,6 +321,7 @@
             <End Role="RecipeIngredient" EntitySet="RecipeIngredients" />
           </AssociationSet>
           <EntitySet Name="UserRecipeComments" EntityType="RecipesDbModel.UserRecipeComment" />
+          <EntitySet Name="Images" EntityType="RecipesDbModel.Image" />
           </EntityContainer>
         <EntityType Name="AspNetUser">
           <Key>
@@ -409,23 +400,23 @@
           <Property Name="Comment" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
           <Property Name="Timestamp" Type="DateTime" Precision="3" />
         </EntityType>
+        <EntityType Name="Image">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ImageType" Type="Byte" />
+          <Property Name="seq" Type="Byte" />
+          <Property Name="ImageApplyID" Type="Int64" />
+          <Property Name="ImageLocation" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="ImageBlob" Type="Binary" MaxLength="Max" FixedLength="false" />
+        </EntityType>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
         <EntityContainerMapping StorageEntityContainer="RecipesDbModelStoreContainer" CdmEntityContainer="RecipiesDbEntities">
-          <EntitySetMapping Name="Images">
-            <EntityTypeMapping TypeName="RecipesDbModel.Image">
-              <MappingFragment StoreEntitySet="Images">
-                <ScalarProperty Name="ID" ColumnName="ID" />
-                <ScalarProperty Name="ImageType" ColumnName="ImageType" />
-                <ScalarProperty Name="seq" ColumnName="seq" />
-                <ScalarProperty Name="ImageApplyID" ColumnName="ImageApplyID" />
-                <ScalarProperty Name="ImageLocation" ColumnName="ImageLocation" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="Recipes">
             <EntityTypeMapping TypeName="RecipesDbModel.Recipe">
               <MappingFragment StoreEntitySet="Recipes">
@@ -572,6 +563,18 @@
                 <ScalarProperty Name="Comment" ColumnName="Comment" />
                 <ScalarProperty Name="UserID" ColumnName="UserID" />
                 <ScalarProperty Name="RecipeID" ColumnName="RecipeID" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Images">
+            <EntityTypeMapping TypeName="RecipesDbModel.Image">
+              <MappingFragment StoreEntitySet="Images">
+                <ScalarProperty Name="ImageBlob" ColumnName="ImageBlob" />
+                <ScalarProperty Name="ImageLocation" ColumnName="ImageLocation" />
+                <ScalarProperty Name="ImageApplyID" ColumnName="ImageApplyID" />
+                <ScalarProperty Name="seq" ColumnName="seq" />
+                <ScalarProperty Name="ImageType" ColumnName="ImageType" />
                 <ScalarProperty Name="ID" ColumnName="ID" />
               </MappingFragment>
             </EntityTypeMapping>

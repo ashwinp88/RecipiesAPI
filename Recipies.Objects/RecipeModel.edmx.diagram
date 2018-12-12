@@ -5,7 +5,6 @@
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
       <Diagram DiagramId="774d72938b044371b000600f4a8d7467" Name="Diagram1">
-        <EntityTypeShape EntityType="RecipesDbModel.Image" Width="1.5" PointX="5.75" PointY="2.125" IsExpanded="true" />
         <EntityTypeShape EntityType="RecipesDbModel.Recipe" Width="1.5" PointX="0.75" PointY="6" IsExpanded="true" />
         <EntityTypeShape EntityType="RecipesDbModel.UnitsOfMeasurement" Width="1.5" PointX="2.75" PointY="7.125" IsExpanded="true" />
         <EntityTypeShape EntityType="RecipesDbModel.UserRecipeBookMark" Width="1.5" PointX="3" PointY="9.625" IsExpanded="true" />
@@ -21,6 +20,7 @@
         <AssociationConnector Association="RecipesDbModel.FK_RecipeIngredients_UnitsOfMeasurement" />
         <AssociationConnector Association="RecipesDbModel.FK_RecipieIngredients_Recipies" />
         <EntityTypeShape EntityType="RecipesDbModel.UserRecipeComment" Width="1.5" PointX="8.375" PointY="5.75" />
+        <EntityTypeShape EntityType="RecipesDbModel.Image" Width="1.5" PointX="5.375" PointY="0.75" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

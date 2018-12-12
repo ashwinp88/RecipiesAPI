@@ -250,14 +250,15 @@ namespace Recipies.API.Controllers
                 await db.SaveChangesAsync();
 
                 if (recipe.RecipeImage_ != null &&
-                    !string.IsNullOrWhiteSpace(recipe.RecipeImage_.ImageLocation))
+                    (!string.IsNullOrWhiteSpace(recipe.RecipeImage_.ImageLocation) || recipe.RecipeImage_.ImageBlob != null))
                 {
                     var newRecipeImage = new Objects.Image
                     {
                         ImageType = 0,
                         seq = recipe.RecipeImage_.seq,
                         ImageApplyID = newRecipe.ID,
-                        ImageLocation = recipe.RecipeImage_.ImageLocation
+                        ImageLocation = recipe.RecipeImage_.ImageLocation,
+                        ImageBlob = recipe.RecipeImage_.ImageBlob
                     };
 
                     db.Images.Add(newRecipeImage);
@@ -351,6 +352,7 @@ namespace Recipies.API.Controllers
                 newRecipeImage.ID = img.ID;
                 newRecipeImage.ImageApplyID = img.ImageApplyID;
                 newRecipeImage.ImageLocation = img.ImageLocation;
+                newRecipeImage.ImageBlob = img.ImageBlob;
                 newRecipeImage.ImageType = img.ImageType;
                 newRecipeImage.seq = img.seq;
             }
